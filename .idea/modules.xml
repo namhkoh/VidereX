@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VidereX.iml" filepath="$PROJECT_DIR$/.idea/modules/VidereX.iml" group="VidereX" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="VidereX/app" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/openCVLibrary3413/openCVLibrary3413.iml" filepath="$PROJECT_DIR$/.idea/modules/openCVLibrary3413/openCVLibrary3413.iml" group="VidereX/openCVLibrary3413" />
+    </modules>
+  </component>
+</project>
