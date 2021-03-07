@@ -4,14 +4,14 @@
   "buildSettings": {
     "environmentVariables": []
   },
-  "cxxBuildFolder": "/Users/lucaskoh/AndroidStudioProjects/VidereX/app/.cxx/ndkBuild/debug/arm64-v8a",
+  "cxxBuildFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/arm64-v8a",
   "info": {
     "abi": "ARM64_V8A",
     "bitness": 64,
     "deprecated": false,
     "default": true
   },
-  "originalCxxBuildFolder": "/Users/lucaskoh/AndroidStudioProjects/VidereX/app/.cxx/ndkBuild/debug/arm64-v8a",
+  "originalCxxBuildFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/arm64-v8a",
   "variant": {
     "buildSystemArgumentList": [],
     "buildTargetSet": [],
@@ -22,12 +22,12 @@
     "module": {
       "buildSystem": "NDK_BUILD",
       "cmakeToolchainFile": "/Users/lucaskoh/Library/Android/sdk/ndk/21.0.6113669/build/cmake/android.toolchain.cmake",
-      "cxxFolder": "/Users/lucaskoh/AndroidStudioProjects/VidereX/app/.cxx",
+      "cxxFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx",
       "gradleModulePathName": ":app",
-      "intermediatesFolder": "/Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates",
-      "makeFile": "/Users/lucaskoh/Desktop/OpenCV-android-sdk/sdk/native/jni/OpenCV-arm64-v8a.mk",
-      "moduleBuildFile": "/Users/lucaskoh/AndroidStudioProjects/VidereX/app/build.gradle",
-      "moduleRootFolder": "/Users/lucaskoh/AndroidStudioProjects/VidereX/app",
+      "intermediatesFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/build/intermediates",
+      "makeFile": "/Users/lucaskoh/Documents/Github/VidereX/OpenCV-android-sdk/sdk/native/jni/OpenCV-arm64-v8a.mk",
+      "moduleBuildFile": "/Users/lucaskoh/Documents/GitHub/VidereX/app/build.gradle",
+      "moduleRootFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app",
       "ndkDefaultAbiList": [
         "ARMEABI_V7A",
         "ARM64_V8A",
@@ -91,13 +91,13 @@
       "ndkDefaultStl": "SYSTEM",
       "ndkVersion": "21.0.6113669",
       "project": {
-        "compilerSettingsCacheFolder": "/Users/lucaskoh/AndroidStudioProjects/VidereX/.cxx",
-        "cxxFolder": "/Users/lucaskoh/AndroidStudioProjects/VidereX/.cxx",
+        "compilerSettingsCacheFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/.cxx",
+        "cxxFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/.cxx",
         "ideBuildTargetAbi": "arm64-v8a,armeabi-v7a,armeabi",
         "isBuildOnlyTargetAbiEnabled": true,
         "isCmakeBuildCohabitationEnabled": false,
         "isNativeCompilerSettingsCacheEnabled": false,
-        "rootBuildGradleFolder": "/Users/lucaskoh/AndroidStudioProjects/VidereX",
+        "rootBuildGradleFolder": "/Users/lucaskoh/Documents/GitHub/VidereX",
         "sdkFolder": "/Users/lucaskoh/Library/Android/sdk",
         "isPrefabEnabled": false
       },
@@ -114,13 +114,13 @@
         "SYSTEM": {}
       }
     },
-    "objFolder": "/Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates/ndkBuild/debug/obj/local",
+    "objFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/build/intermediates/ndkBuild/debug/obj/local",
     "variantName": "debug",
     "validAbiList": [
       "ARM64_V8A"
     ],
-    "prefabDirectory": "/Users/lucaskoh/AndroidStudioProjects/VidereX/app/.cxx/ndkBuild/debug/prefab",
+    "prefabDirectory": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/prefab",
     "prefabPackageDirectoryList": []
   },
-  "prefabFolder": "/Users/lucaskoh/AndroidStudioProjects/VidereX/app/.cxx/ndkBuild/debug/prefab/arm64-v8a"
+  "prefabFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/prefab/arm64-v8a"
 }

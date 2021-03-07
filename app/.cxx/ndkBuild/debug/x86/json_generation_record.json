@@ -13,6 +13,18 @@
   },
   {
     "level": "INFO",
+    "message": "- expected json /Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/x86/android_gradle_build.json file is not present, will remove stale json folder",
+    "file": "/Users/lucaskoh/Documents/Desktop/OpenCV-android-sdk/sdk/native/jni/OpenCV-arm64-v8a.mk",
+    "tag": "debug|x86"
+  },
+  {
+    "level": "INFO",
+    "message": "- missing previous command file /Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/x86/build_command.txt, will remove stale json folder",
+    "file": "/Users/lucaskoh/Documents/Desktop/OpenCV-android-sdk/sdk/native/jni/OpenCV-arm64-v8a.mk",
+    "tag": "debug|x86"
+  },
+  {
+    "level": "INFO",
     "message": "- command changed from previous, will remove stale json folder",
     "file": "/Users/lucaskoh/Documents/Desktop/OpenCV-android-sdk/sdk/native/jni/OpenCV-arm64-v8a.mk",
     "tag": "debug|x86"
