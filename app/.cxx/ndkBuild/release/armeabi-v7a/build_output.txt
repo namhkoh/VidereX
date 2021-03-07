@@ -1,0 +1,3 @@
+rm -f /Users/lucaskoh/Documents/GitHub/VidereX/app/build/intermediates/ndkBuild/release/lib/armeabi-v7a/*
+rm -f /Users/lucaskoh/Documents/GitHub/VidereX/app/build/intermediates/ndkBuild/release/lib/armeabi-v7a/gdbserver
+rm -f /Users/lucaskoh/Documents/GitHub/VidereX/app/build/intermediates/ndkBuild/release/lib/armeabi-v7a/gdb.setup

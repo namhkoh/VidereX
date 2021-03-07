@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("TAG", "OpenCV loaded successfully");
                     mOpenCvCameraView.enableView();
                     System.loadLibrary("libopencv_java3"); // if you are working with JNI
-//                    run();
                 }
                 break;
                 default: {
