@@ -1,0 +1,3 @@
+include ':app'
+rootProject.name = "VidereX"
+include ':openCVLibrary3413'

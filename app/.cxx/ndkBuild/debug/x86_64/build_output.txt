@@ -1,0 +1,9 @@
+rm -f /Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates/ndkBuild/debug/lib/x86_64/*
+rm -f /Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdbserver
+rm -f /Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdb.setup
+mkdir -p /Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates/ndkBuild/debug/lib/x86_64
+echo [x86_64] "Gdbserver      ": "[x86_64-linux-android] /Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdbserver"
+install -p /Users/lucaskoh/Library/Android/sdk/ndk/21.0.6113669/prebuilt/android-x86_64/gdbserver/gdbserver /Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdbserver
+echo [x86_64] "Gdbsetup       ": "/Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdb.setup"
+echo "set solib-search-path /Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates/ndkBuild/debug/obj/local/x86_64" > /Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdb.setup
+echo "directory /Users/lucaskoh/Library/Android/sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/darwin-x86_64/sysroot" >> /Users/lucaskoh/AndroidStudioProjects/VidereX/app/build/intermediates/ndkBuild/debug/lib/x86_64/gdb.setup
