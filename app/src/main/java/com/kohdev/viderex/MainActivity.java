@@ -28,10 +28,10 @@ import java.util.Arrays;
 import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
+
     private CameraBridgeViewBase mOpenCvCameraView;
     public CameraBridgeViewBase.CvCameraViewListener2 camListener;
-//    private CameraDevice mCameraDevice;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -42,35 +42,18 @@ public class MainActivity extends AppCompatActivity {
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.MainCameraView);
         mOpenCvCameraView.setMaxFrameSize(1920, 1080);
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
-//        mOpenCvCameraView.setMaxFrameSize(1920,1080);
     }
 
-
-    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
-        @Override
-        public void onManagerConnected(int status) {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS: {
-                    Log.i("TAG", "OpenCV loaded successfully");
-                    mOpenCvCameraView.enableView();
-                    mOpenCvCameraView.setMaxFrameSize(1920, 1080);
-                    System.loadLibrary("libopencv_java3"); // if you are working with JNI
-                }
-                break;
-                default: {
-                    super.onManagerConnected(status);
-                }
-                break;
-            }
-        }
-    };
-
     @Override
-    public void onResume() {
+    protected void onResume() {
         super.onResume();
-        mOpenCvCameraView.enableView();
-        mOpenCvCameraView.setMaxFrameSize(1920, 1080);
-        run();
+        // Check if OpenCV has loaded properly
+        if (!OpenCVLoader.initDebug()) {
+            Log.e("Error", "There is something wrong with OpenCV");
+        } else {
+            mOpenCvCameraView.enableView();
+            run();
+        }
     }
 
     private void run() {
@@ -98,8 +81,42 @@ public class MainActivity extends AppCompatActivity {
 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(camListener);
-        mOpenCvCameraView.setMaxFrameSize(1920, 1080);
+    }
 
+    @Override
+    public void onCameraViewStarted(int width, int height) {
 
+    }
+
+    @Override
+    public void onCameraViewStopped() {
+
+    }
+
+    @Override
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        return null;
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mOpenCvCameraView != null) {
+            mOpenCvCameraView.disableView();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Destroying the camera.
+        super.onDestroy();
+        if (mOpenCvCameraView != null) {
+            mOpenCvCameraView.disableView();
+        }
     }
 }
