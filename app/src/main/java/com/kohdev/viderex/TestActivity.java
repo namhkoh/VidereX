@@ -22,7 +22,9 @@ public class TestActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_test);
+
 
         // setting up the java camera view
         cameraBridgeViewBase = (JavaCameraView) findViewById(R.id.CameraView);
