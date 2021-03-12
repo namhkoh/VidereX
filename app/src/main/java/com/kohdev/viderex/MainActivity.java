@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
-import android.view.Window;
 import android.view.WindowManager;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -38,13 +37,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Remove title bar
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.MainCameraView);
-        Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
         mOpenCvCameraView.setMaxFrameSize(1920,1080);
+        Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
+//        mOpenCvCameraView.setMaxFrameSize(1920,1080);
     }
 
 
@@ -57,11 +55,12 @@ public class MainActivity extends AppCompatActivity {
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.i("TAG", "OpenCV loaded successfully");
                     mOpenCvCameraView.enableView();
+                    mOpenCvCameraView.setMaxFrameSize(1920,1080);
                     System.loadLibrary("libopencv_java3"); // if you are working with JNI
                 }
                 break;
                 default: {
-                    super.onManagerConnected(status);
+                    super.onManagerConnected(status); w
                 }
                 break;
             }
@@ -72,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         mOpenCvCameraView.enableView();
+        mOpenCvCameraView.setMaxFrameSize(1920,1080);
         run();
     }
 
