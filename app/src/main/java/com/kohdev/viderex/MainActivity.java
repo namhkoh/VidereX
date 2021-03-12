@@ -5,15 +5,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.WindowManager;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -21,8 +25,10 @@ import org.opencv.android.Camera2Renderer;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     private CameraBridgeViewBase mOpenCvCameraView;
     public CameraBridgeViewBase.CvCameraViewListener2 camListener;
+    int counter = 0;
+    String mCameraId;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -46,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     protected void onResume() {
+        setUpCamera();
         super.onResume();
         // Check if OpenCV has loaded properly
         if (!OpenCVLoader.initDebug()) {
@@ -55,6 +64,48 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             run();
         }
     }
+
+    /**
+     *     private void setUpCamera() {
+     *         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+     *         try {
+     *             for (String cameraId : cameraManager.getCameraIdList()) {
+     *                 CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
+     *                 // Skip front facing camera
+     *                 if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == cameraCharacteristics.LENS_FACING_FRONT) {
+     *                     continue;
+     *                 }
+     *                 mCameraId = cameraId;
+     *                 return;
+     *             }
+     *         } catch (CameraAccessException e) {
+     *             e.printStackTrace();
+     *         }
+     *     }
+     */
+
+    private void setUpCamera() {
+        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        try {
+            String[] cameraID;
+            cameraID = cameraManager.getCameraIdList();
+            for (int i = 0; i < cameraID.length; i++) {
+                CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraID[0]);
+                Log.e("TAG", cameraID[i]);
+            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                cameraManager.setTorchMode(cameraID[0], true);
+//            }
+
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    private void openCamera(String cameraId, CameraDevice.StateCallback callback, Handler handler) {
+//
+//    }
+
 
     private void run() {
         Log.e("entered", "hello there");
@@ -72,10 +123,21 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
             @Override
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-                Mat rgb = inputFrame.rgba();
-                Mat gray = new Mat();
-                Imgproc.cvtColor(rgb, gray, Imgproc.COLOR_RGB2GRAY);
-                return gray;
+                // Computing the frames.
+//                Mat rgb = inputFrame.rgba();
+//                Mat gray = new Mat();
+//                Imgproc.cvtColor(rgb, gray, Imgproc.COLOR_RGB2GRAY);
+//                return gray;
+
+                Mat frame = inputFrame.rgba();
+                Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2GRAY);
+                // when it is is even
+//                if (counter % 2 == 0) {
+//                    Core.flip(frame, frame, 1);
+//                    Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2GRAY);
+//                }
+//                counter += 1;
+                return frame;
             }
         };
 

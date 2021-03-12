@@ -11,6 +11,6 @@
         android:layout_height="match_parent"
         android:id="@+id/MainCameraView"
         opencv:show_fps="true"
-        opencv:camera_id="any" />
+        opencv:camera_id="2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
