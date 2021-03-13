@@ -45,7 +45,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void selecting_route() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, RecordActivity.class);
         startActivity(intent);
     }
 

@@ -2,42 +2,27 @@ package com.kohdev.viderex;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceView;
-import android.view.TextureView;
 import android.view.WindowManager;
 
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.Camera2Renderer;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.*;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * This class will handle the recording of the route.
  */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
+public class RecordActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private CameraBridgeViewBase mOpenCvCameraView;
     public CameraBridgeViewBase.CvCameraViewListener2 camListener;
@@ -49,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_record_route);
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.MainCameraView);
         mOpenCvCameraView.setMaxFrameSize(1920, 1080);
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
