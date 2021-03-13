@@ -9,17 +9,33 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.View;
+import android.widget.Button;
 
 /**
  * This activity will provide hte user with options to either follow a route or record a route.
  */
 public class MenuActivity extends AppCompatActivity {
 
+    private Button selectRouteBtn;
+    private Button followRouteBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         checkPermission();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        selectRouteBtn = findViewById(R.id.selectRoute);
+        selectRouteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent 
+            }
+        });
+
+        followRouteBtn = findViewById(R.id.followRoute);
     }
 
     /**

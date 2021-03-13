@@ -99,3 +99,6 @@ lint/tmp/
 .gradle/6.1.1/fileHashes/fileHashes.bin
 .gradle/6.1.1/executionHistory/executionHistory.bin
 .gradle/6.1.1/executionHistory/executionHistory.lock
+*.bin
+*.lock
+*.ser
