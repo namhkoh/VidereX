@@ -31,12 +31,29 @@ public class MenuActivity extends AppCompatActivity {
         selectRouteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent 
+                selecting_route();
             }
         });
 
         followRouteBtn = findViewById(R.id.followRoute);
+        followRouteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                follow_route();
+            }
+        });
     }
+
+    private void selecting_route() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void follow_route() {
+        Intent intent = new Intent(this, FollowRouteActivity.class);
+        startActivity(intent);
+    }
+
 
     /**
      * Checking permission with the Device.
