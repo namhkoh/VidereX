@@ -39,6 +39,22 @@ public class MenuActivity extends AppCompatActivity {
                 follow_route();
             }
         });
+
+        Button singleMatchBtn = findViewById(R.id.singleMatch);
+        singleMatchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchSingleMatch();
+            }
+        });
+    }
+
+    /**
+     * This method will launch the single match method.
+     */
+    private void launchSingleMatch() {
+        Intent intent = new Intent(this, SingleMatchActivity.class);
+        startActivity(intent);
     }
 
     /**

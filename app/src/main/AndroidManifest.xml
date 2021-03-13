@@ -25,17 +25,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".SingleMatchActivity"></activity>
-        <activity android:name=".CaptureView">
+        <activity
+            android:name=".SingleMatchActivity"
+            android:screenOrientation="landscape">
             <intent-filter>
 
-                <!-- <action android:name="android.intent.action.MAIN" /> -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".CaptureView"
+            android:screenOrientation="landscape">
+            <intent-filter>
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".FollowRouteActivity" />
-        <activity android:name=".MenuActivity">
+        <activity
+            android:name=".MenuActivity"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,8 +55,6 @@
             android:name=".RecordRouteActivity"
             android:screenOrientation="landscape">
             <intent-filter>
-
-                <!-- <action android:name="android.intent.action.MAIN" /> -->
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>

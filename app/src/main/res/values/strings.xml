@@ -4,4 +4,5 @@
     // MenuActivity
     <string name="SelectRouteButton">Select Route</string>
     <string name="FollowRouteButton">Follow Route</string>
+    <string name="singleMatch">Single Match</string>
 </resources>
