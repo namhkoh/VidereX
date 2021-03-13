@@ -17,9 +17,6 @@ import android.widget.Button;
  */
 public class MenuActivity extends AppCompatActivity {
 
-    private Button selectRouteBtn;
-    private Button followRouteBtn;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -27,7 +24,7 @@ public class MenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        selectRouteBtn = findViewById(R.id.selectRoute);
+        Button selectRouteBtn = findViewById(R.id.selectRoute);
         selectRouteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -35,7 +32,7 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
-        followRouteBtn = findViewById(R.id.followRoute);
+        Button followRouteBtn = findViewById(R.id.followRoute);
         followRouteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,7 +45,7 @@ public class MenuActivity extends AppCompatActivity {
      * Method to route the user to select route
      */
     private void selecting_route() {
-        Intent intent = new Intent(this, FollowRouteActivity.class);
+        Intent intent = new Intent(this, RecordRouteActivity.class);
         startActivity(intent);
     }
 
@@ -56,7 +53,7 @@ public class MenuActivity extends AppCompatActivity {
      * Method to route the user to follow route
      */
     private void follow_route() {
-        Intent intent = new Intent(this, RecordActivity.class);
+        Intent intent = new Intent(this, FollowRouteActivity.class);
         startActivity(intent);
     }
 

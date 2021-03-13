@@ -24,7 +24,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".FollowRouteActivity"></activity>
+        <activity android:name=".CaptureView">
+            <intent-filter>
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".FollowRouteActivity" />
         <activity android:name=".MenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RecordActivity"
+            android:name=".RecordRouteActivity"
             android:screenOrientation="landscape">
             <intent-filter>
 
