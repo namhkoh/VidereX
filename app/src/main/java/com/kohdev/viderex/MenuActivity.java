@@ -44,13 +44,19 @@ public class MenuActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Method to route the user to select route
+     */
     private void selecting_route() {
-        Intent intent = new Intent(this, RecordActivity.class);
+        Intent intent = new Intent(this, FollowRouteActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Method to route the user to follow route
+     */
     private void follow_route() {
-        Intent intent = new Intent(this, FollowRouteActivity.class);
+        Intent intent = new Intent(this, RecordActivity.class);
         startActivity(intent);
     }
 

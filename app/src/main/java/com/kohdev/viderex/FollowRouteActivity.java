@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+/**
+ * This activity will handle the following route ability for the user.
+ */
 public class FollowRouteActivity extends AppCompatActivity {
 
     @Override
