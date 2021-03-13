@@ -33,6 +33,9 @@ import org.opencv.*;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class will handle the recording of the route.
+ */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
