@@ -136,6 +136,12 @@ public class MenuActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        // Create the storage directory if it does not exist
+        if (!storageDir.exists() && !storageDir.mkdirs()) {
+            Log.d("APP_TAG", "failed to create directory");
+        }
+
         // Create the storage directory if it does not exist
         Log.e("Storage dir", String.valueOf(storageDir));
         File newStorageDir = new File(storageDir + "/Navigant/");
@@ -150,6 +156,14 @@ public class MenuActivity extends AppCompatActivity {
         currentPhotoPath = image.getAbsolutePath();
         Log.e("current photo", currentPhotoPath);
         return image;
+    }
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
     }
 
 
@@ -172,6 +186,9 @@ public class MenuActivity extends AppCompatActivity {
                         }
 
                         this.bitmap = BitmapFactory.decodeStream(image_stream);
+
+                        intent = new Intent(MenuActivity.this, SingleMatchActivity.class);
+                        startActivity(intent);
                 }
         }
     }
