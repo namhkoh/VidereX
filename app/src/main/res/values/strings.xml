@@ -5,4 +5,9 @@
     <string name="SelectRouteButton">Select Route</string>
     <string name="FollowRouteButton">Follow Route</string>
     <string name="singleMatch">Single Match</string>
+    // SingleMatchActivity
+    <string name="goalImageView">Goal image</string>
+    <string name="differenceImageView">Difference image</string>
+    <string name="diffVal"> </string>
+
 </resources>
