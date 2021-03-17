@@ -16,6 +16,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
@@ -187,7 +188,13 @@ public class MenuActivity extends AppCompatActivity {
 
                         this.bitmap = BitmapFactory.decodeStream(image_stream);
 
+//                        ByteArrayOutputStream bs = new ByteArrayOutputStream();
+//                        this.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
+
                         intent = new Intent(MenuActivity.this, SingleMatchActivity.class);
+//                        intent.putExtra("byteArray", bs.toByteArray());
+//                        Log.e("fileURI", String.valueOf(currentPhotoPath));
+                        intent.putExtra("goalImagePath", currentPhotoPath);
                         startActivity(intent);
                 }
         }

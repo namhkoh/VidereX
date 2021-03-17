@@ -1,5 +1,8 @@
 package com.kohdev.viderex;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,6 +27,9 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import static org.opencv.core.CvType.CV_8UC1;
 
 /**
@@ -32,11 +39,11 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 
     private CameraBridgeViewBase mOpenCvCameraView;
     private SensorManager mSensorManager;
+    private Bitmap goalImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        OpenCVLoader.initDebug();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_single_match);
 
@@ -44,34 +51,13 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         mOpenCvCameraView.setCvCameraViewListener(this);
 
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
+        Intent intent = getIntent();
+        String goalImagePath = String.valueOf(intent.getStringExtra("goalImagePath"));
+        Log.e("goalImage", goalImagePath);
+        goalImage = loadBitmapFromUrl(goalImagePath);
+        Log.e("width", String.valueOf(goalImage.getWidth()));
+        Log.e("height", String.valueOf(goalImage.getHeight()));
     }
-
-//    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
-//        @Override
-//        public void onManagerConnected(int status) {
-//            switch (status) {
-//                case LoaderCallbackInterface.SUCCESS:
-//                {
-//                    Log.i("OpenCV", "OpenCV loaded successfully");
-//                } break;
-//                default:
-//                {
-//                    super.onManagerConnected(status);
-//                } break;
-//            }
-//        }
-//    };
-
-//    private void getGoalImage(){
-//        Utils.bitmapToMat(MenuActivity.bitmap, temp);
-//        // Convert from RGB to grayscale and histeq
-//        Imgproc.cvtColor(temp, temp, Imgproc.COLOR_RGB2GRAY);
-//        //Imgproc.equalizeHist(temp, temp);
-//        Core.flip(temp, temp, 1);
-//        Size size = new Size(150,250);
-//        Imgproc.resize(temp, temp, size);
-//    }
-
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -96,9 +82,9 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat frame = inputFrame.rgba();
-        Imgproc.cvtColor(frame,frame,Imgproc.COLOR_RGBA2GRAY);
-        Size size = new Size(150,250);
-        Imgproc.resize(frame, frame, size);
+//        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2GRAY);
+//        Size size = new Size(150,250);
+//        Imgproc.resize(frame, frame, size);
 
 //        computeAbsDiff(temp,frame);
 
@@ -157,4 +143,14 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         Log.e("ERROR", String.valueOf(error));
         return error;
     }
+
+    //TODO: add try/catch for error handling
+    private Bitmap loadBitmapFromUrl(String goalImageFilePath) {
+        File imgFile = new File(goalImageFilePath);
+        Bitmap goalImage = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        ImageView goalImageView = (ImageView) findViewById(R.id.goalView);
+        goalImageView.setImageBitmap(goalImage);
+        return goalImage;
+    }
+
 }
