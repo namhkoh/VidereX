@@ -36,6 +36,7 @@ import org.opencv.imgproc.Imgproc;
 import java.io.File;
 import java.io.FileInputStream;
 
+import static org.opencv.core.CvType.CV_32F;
 import static org.opencv.core.CvType.CV_8UC1;
 import static org.opencv.core.CvType.CV_8UC4;
 
@@ -45,7 +46,6 @@ import static org.opencv.core.CvType.CV_8UC4;
 public class SingleMatchActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener {
 
     private CameraBridgeViewBase mOpenCvCameraView;
-    private SensorManager mSensorManager;
     private Bitmap goalImage;
     private Mat resizedImage;
     private ImageView differenceImageView;
@@ -62,42 +62,53 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         mOpenCvCameraView = findViewById(R.id.OpenCVCamera);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-        // vibrator test
-//        // Get instance of Vibrator from current Context
-//        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-//
-//        // Vibrate for 400 milliseconds
-//        v.vibrate(400);
-
         differenceImageView = findViewById(R.id.differenceView);
         diffVal = findViewById(R.id.differenceValue);
 
         frameCount = 0;
 
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
+
+        // Loading goal image from previous activity
         Intent intent = getIntent();
         String goalImagePath = String.valueOf(intent.getStringExtra("goalImagePath"));
-        Log.e("goalImage", goalImagePath);
         goalImage = loadBitmapFromUrl(goalImagePath);
-        Log.e("width", String.valueOf(goalImage.getWidth()));
-        Log.e("height", String.valueOf(goalImage.getHeight()));
-
+        // Resizing image to match the preview frame
         Mat goalTmp = bitmapToMat(goalImage);
-
-        Mat goalTester = new Mat(goalImage.getHeight(), goalImage.getWidth(), CV_8UC1);
-
         resizedImage = new Mat();
+//        resizedImage = prepare_data(goalTmp, 1920, 864);
+
+
+//        ImageView goalImageView = findViewById(R.id.goalView);
+//        goalImageView.setImageBitmap(convertMatToBitMap(resizedImage));
+
         Size size = new Size(1920, 864);
         Imgproc.resize(goalTmp, resizedImage, size);
+        //debug to show output.
 
-//        ImageView test = findViewById(R.id.testView);
-//        test.setImageBitmap(convertMatToBitMap(resizedImage));
+//        ImageView testView = findViewById(R.id.testView);
+//        testView.setImageBitmap(convertMatToBitMap(resizedImage));
 
-//        Log.e("goalTmp_resized width", String.valueOf(resizedImage.width()));
-//        Log.e("goalTmp_resized height", String.valueOf(resizedImage.height()));
+    }
 
-//        Log.e("goalTest_w",String.valueOf(goalTester.width()));
-//        Log.e("goalTest_h",String.valueOf(goalTester.height()));
+    /**
+     * This method will prepare the data to be used for the absolute diffferencing function
+     *
+     * @param img    input image
+     * @param width  input image width
+     * @param height - input image height
+     * @return resizedImage processed
+     */
+    private Mat prepare_data(Mat img, int width, int height) {
+        // Resize image
+        Mat resizeImage = new Mat();
+        Size size = new Size(width, height);
+        Imgproc.resize(img, resizeImage, size);
+        // Gray scale the image
+        Imgproc.cvtColor(resizeImage, resizeImage, Imgproc.COLOR_BGR2GRAY);
+        // Apply Histogram equlisation to image
+        Imgproc.equalizeHist(resizeImage, resizeImage);
+        return resizeImage;
     }
 
     @Override
@@ -133,13 +144,12 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 
             if (config == Bitmap.Config.ARGB_8888 && w > 0 && h > 0) {
 
-                mat = new Mat(image.getHeight(), image.getWidth(), CV_8UC1 );
+                mat = new Mat(image.getHeight(), image.getWidth(), CV_8UC1);
                 Utils.bitmapToMat(image, mat);
             } else {
                 Log.e("Snapshot", "Error loading snapshot image: Incorrect bitmap type, expected ARGB_8888.");
             }
-        }
-        else {
+        } else {
             Log.e("Snapshot", "NULL Bitmap object passed for conversion to Mat.");
         }
 
@@ -160,20 +170,15 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         return bmp;
     }
 
-    /**
-     * This function will resize,greyscale and apply histeq to the input images and normalize!
-     * returns: preprocessed image.
-     */
-    private void preprocessImg() {
-
-    }
-
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        //.gray for gray scale
         Mat frame = inputFrame.rgba();
-//        Imgproc.cvtColor(frame,frame, Imgproc.COLOR_BGR2GRAY);
-        if (frameCount == 5) {
-            final double diff = getDiff(resizedImage, frame);
+//        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
+//        Imgproc.equalizeHist(frame, frame);
+
+        if (frameCount == 3) {
+            final double diff = computeAbsDiff(resizedImage, frame);
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -185,6 +190,8 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         } else {
             frameCount++;
         }
+        Log.e("frame width", String.valueOf(frame.width()));
+        Log.e("frame height", String.valueOf(frame.height()));
         return frame;
     }
 
@@ -216,29 +223,26 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         }
     }
 
-    private static Double getDiff(Mat current, Mat goal) {
+
+    private static Double computeRMSE(Mat current, Mat goal) {
         int w = current.width();
         int h = current.height();
         Mat difference = Mat.zeros(w, h, CV_8UC1);
         double num_pixels = current.size().area();
-        // Change the images to grey scale
-//
-//        Core.normalize(current,current,0,255,Core.NORM_L2);
-//        Core.normalize(goal,goal,0,255,Core.NORM_L2);
-//
-//
-//        System.out.println(current);
 
+        // Compute the absolute difference across the two images.
         Core.absdiff(current, goal, difference);
-        difference.convertTo(difference, CvType.CV_32F);
+        //CV_32F
+        difference.convertTo(difference, CV_32F);
+        difference = difference.mul(difference);
 
         Scalar s = Core.sumElems(difference);
         double sse = s.val[0];
 
         // Mean and root-mean squared error
-//        double mse  = sse / num_pixels;
-//        double rmse = Math.sqrt(mse);
-        Log.e("Similarity metric", String.valueOf(sse));
+        double mse  = sse / num_pixels;
+        double rmse = Math.sqrt(mse);
+        Log.e("Similarity metric", String.valueOf(rmse));
 
 
 //        if ((goal != null) && (current != null)) {
@@ -249,45 +253,25 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 //
 //            }
 //        }
-        return sse;
+        return rmse;
     }
 
     /**
      * This method will compute the absolute difference of two images.
      *
-     * @param current
-     * @param goal
-     * @return error
+     * @param current - Current view
+     * @param goal - Goal view
+     * @return Difference value
      */
-    private static Mat computeAbsDiff(Mat current, Mat goal) {
+    private static Double computeAbsDiff(Mat current, Mat goal) {
         int w = current.width();
         int h = current.height();
-        Mat difference = Mat.zeros(w, h, CV_8UC1);
-        // Change the images to grey scale
-//
-//        Core.normalize(current,current,0,255,Core.NORM_L2);
-//        Core.normalize(goal,goal,0,255,Core.NORM_L2);
-//
-//
-//        System.out.println(current);
+        Mat m_norm = Mat.zeros(w,h,CV_8UC1);
 
-        Core.absdiff(current, goal, difference);
-        difference.convertTo(difference, CvType.CV_32F);
-
-        Scalar s = Core.sumElems(difference);
-        double sse = s.val[0];
-        Log.e("Similarity metric", String.valueOf(sse));
-
-
-//        if ((goal != null) && (current != null)) {
-//            if ((current.height() == goal.height()) && (current.width() == goal.width()) && (current.type() == CV_8UC1) && (goal.type() == CV_8UC1)) {
-//
-//                // Calculate per-pixel absolute differences of current and goal images
-//                Core.absdiff(current, goal, error);
-//
-//            }
-//        }
-        return difference;
+        Core.absdiff(current,goal,m_norm);
+        Scalar s = Core.sumElems(m_norm);
+        System.out.println(s);
+        return 0.0;
     }
 
 
