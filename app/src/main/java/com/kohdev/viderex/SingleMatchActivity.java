@@ -269,8 +269,13 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         int w = current.width();
         int h = current.height();
         Mat error = Mat.zeros(w, h, CV_8UC1);
+        Mat current_norm= new Mat();
+        Mat goal_norm = new Mat();
+        //Normalize input
+        current.convertTo(current_norm,CV_32F,1.0/255,0);
+        goal.convertTo(goal_norm,CV_32F,1.0/255,0);
 
-        Core.absdiff(current, goal, error);
+        Core.absdiff(current_norm, goal_norm, error);
         Scalar s = Core.sumElems(error);
         System.out.println(s);
 
