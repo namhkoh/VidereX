@@ -12,6 +12,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,7 +39,7 @@ import java.util.Date;
 /**
  * This activity will provide hte user with options to either follow a route or record a route.
  */
-public class MenuActivity extends AppCompatActivity {
+public class MenuActivity extends AppCompatActivity implements SensorEventListener {
 
 
     final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
@@ -50,6 +54,10 @@ public class MenuActivity extends AppCompatActivity {
     public static final int MEDIA_TYPE_VIDEO = 2;
 
     String currentPhotoPath;
+
+    SensorManager mSensorManager;
+    Sensor accelerometer, magnetometer;
+    float azimuth, pitch, roll;
 
 
     @Override
@@ -82,6 +90,10 @@ public class MenuActivity extends AppCompatActivity {
                 launchSingleMatch();
             }
         });
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
     }
 
     /**
@@ -188,12 +200,10 @@ public class MenuActivity extends AppCompatActivity {
 
                         this.bitmap = BitmapFactory.decodeStream(image_stream);
 
-//                        ByteArrayOutputStream bs = new ByteArrayOutputStream();
-//                        this.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
-
                         intent = new Intent(MenuActivity.this, SingleMatchActivity.class);
-//                        intent.putExtra("byteArray", bs.toByteArray());
-//                        Log.e("fileURI", String.valueOf(currentPhotoPath));
+                        intent.putExtra("azimuth", azimuth);
+                        intent.putExtra("pitch", pitch);
+                        intent.putExtra("roll", roll);
                         intent.putExtra("goalImagePath", currentPhotoPath);
                         startActivity(intent);
                 }
@@ -264,5 +274,49 @@ public class MenuActivity extends AppCompatActivity {
                 return;
         }
     }
+
+
+    float[] mGravity;
+    float[] mGeomagnetic;
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+            mGravity = event.values;
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+            mGeomagnetic = event.values;
+        if (mGravity != null && mGeomagnetic != null) {
+            float R[] = new float[9];
+            float I[] = new float[9];
+            boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+            if (success) {
+                float[] orientation = new float[3];
+                SensorManager.getOrientation(R, orientation);
+                azimuth = orientation[0]; // orientation contains: azimuth, pitch and roll
+                pitch = orientation[1];
+                roll = orientation[2];
+//                System.out.println("azimuth: " + azimuth + " " + "pitch: " + pitch + " " + "roll: " + roll);
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.unregisterListener(this);
+    }
+
 
 }

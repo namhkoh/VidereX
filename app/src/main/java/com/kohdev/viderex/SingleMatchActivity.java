@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,36 +11,26 @@ import android.os.Vibrator;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.nio.DoubleBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.opencv.core.CvType.CV_32F;
 import static org.opencv.core.CvType.CV_8UC1;
-import static org.opencv.core.CvType.CV_8UC4;
 
 /**
  * This activity will handle the Single matching ability between the current view and the image taken
@@ -53,16 +42,11 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     private Mat resizedImage;
     private ImageView differenceImageView;
     private SensorManager mSensorManager;
-    Sensor accelerometer;
-    Sensor magnetometer;
     private TextView diffVal;
+    Sensor accelerometer, magnetometer;
     Vibrator v;
-    float azimut;
-    float pitch;
-    float roll;
-    TextView azimuttv;
-    TextView pitchtv;
-    TextView rolltv;
+    float azimuth, pitch, roll;
+    TextView azimuthTv, pitchTv, rollTv;
     int frameCount;
 
     @Override
@@ -70,6 +54,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_single_match);
+        Intent intent = getIntent();
 
         mOpenCvCameraView = findViewById(R.id.OpenCVCamera);
         mOpenCvCameraView.setCvCameraViewListener(this);
@@ -77,9 +62,15 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 //        differenceImageView = findViewById(R.id.differenceView);
         diffVal = findViewById(R.id.differenceValue);
 
-        azimuttv = findViewById(R.id.azimut);
-        pitchtv = findViewById(R.id.pitch);
-        rolltv = findViewById(R.id.roll);
+        azimuthTv = findViewById(R.id.azimut);
+        pitchTv = findViewById(R.id.pitch);
+        rollTv = findViewById(R.id.roll);
+
+        float incoming_azimuth = intent.getFloatExtra("azimuth",-1);
+        float incoming_pitch = intent.getFloatExtra("pitch",-1);
+        float incoming_roll = intent.getFloatExtra("roll",-1);
+
+        System.out.println("azimuth_inc : " + incoming_azimuth +  " " + "pitch_inc : " + incoming_pitch + " " + "roll_inc: "+ incoming_roll);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -91,7 +82,6 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
 
         // Loading goal image from previous activity
-        Intent intent = getIntent();
         String goalImagePath = String.valueOf(intent.getStringExtra("goalImagePath"));
         goalImage = loadBitmapFromUrl(goalImagePath);
         // Resizing image to match the preview frame
@@ -138,12 +128,12 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
             if (success) {
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(R, orientation);
-                azimut = orientation[0]; // orientation contains: azimut, pitch and roll
+                azimuth = orientation[0]; // orientation contains: azimut, pitch and roll
                 pitch = orientation[1];
                 roll = orientation[2];
-                azimuttv.setText("Azimut: " + azimut);
-                pitchtv.setText("Pitch: " + pitch);
-                rolltv.setText("Roll: " + roll);
+                azimuthTv.setText("Azimut: " + azimuth);
+                pitchTv.setText("Pitch: " + pitch);
+                rollTv.setText("Roll: " + roll);
                 //System.out.println("azimut: " + azimut +  " " + "pitch: " + pitch + " " + "roll: "+ roll);
             }
         }
