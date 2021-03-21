@@ -43,6 +43,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     private ImageView differenceImageView;
     private SensorManager mSensorManager;
     private TextView diffVal;
+    int threshold = 7000;
     Sensor accelerometer, magnetometer;
     Vibrator v;
     float azimuth, pitch, roll;
@@ -132,7 +133,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
                 azimuth = orientation[0]; // orientation contains: azimut, pitch and roll
                 pitch = orientation[1];
                 roll = orientation[2];
-                azimuthTv.setText("Azimut: " + azimuth);
+                azimuthTv.setText("Azimuth: " + azimuth);
                 pitchTv.setText("Pitch: " + pitch);
                 rollTv.setText("Roll: " + roll);
                 //System.out.println("azimut: " + azimut +  " " + "pitch: " + pitch + " " + "roll: "+ roll);
@@ -278,7 +279,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
      * @param goal    - Goal view
      * @return Difference value
      */
-    private Double computeAbsDiff(Mat current, Mat goal) {
+    public Double computeAbsDiff(Mat current, Mat goal) {
         int range = 10;
         int w = current.width();
         int h = current.height();
@@ -293,17 +294,15 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         Core.absdiff(current_norm, goal_norm, error);
         Scalar s = Core.sumElems(error);
         System.out.println(s);
-
-
-        if (s.val[0] <= 7000) {
-            v.vibrate(100);
-        }
-
 //        if (s.val[0] <= 7000) {
 //            if (Math.abs(incoming_azimuth - azimuth) <= range && Math.abs(incoming_pitch - pitch) <= range && Math.abs(incoming_roll - roll) <= range) {
 //                v.vibrate(100);
 //            }
 //        }
+        //TODO: logic to set the threshold dynamically
+        if (s.val[0] <= threshold) {
+            v.vibrate(100);
+        }
 
         return s.val[0];
     }

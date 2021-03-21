@@ -18,5 +18,7 @@
     <string name="finishRoute">Save Route</string>
     <string name="routeName"> </string>
     <string name="routeNamePlaceholder">i.e Home path</string>
+    // FollowRouteActivity
+    
 
 </resources>

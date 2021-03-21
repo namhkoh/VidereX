@@ -4,12 +4,18 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
+import android.view.Menu;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
@@ -22,29 +28,54 @@ import org.opencv.imgproc.Imgproc;
  * This class will handle the recording of the route.
  */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class FollowRouteActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
+public class FollowRouteActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener {
 
     private CameraBridgeViewBase mOpenCvCameraView;
     public CameraBridgeViewBase.CvCameraViewListener2 camListener;
+
+    private Route route;
+    float azimuth, pitch, roll;
+
+    private SensorManager mSensorManager;
+    Sensor accelerometer, magnetometer;
+
+
+    private Vibrator v;
+
+
     int counter = 0;
+    private int frameCount;
     String mCameraId;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_follow_route);
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.MainCameraView);
         mOpenCvCameraView.setMaxFrameSize(1920, 1080);
-        Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        frameCount = 0;
+
+        // Set up route
+        String routeName = "test";
+        route = MenuActivity.routes.get(routeName);
     }
 
     @Override
     protected void onResume() {
-        setUpCamera();
         super.onResume();
         // Check if OpenCV has loaded properly
+        mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
         if (!OpenCVLoader.initDebug()) {
             Log.e("Error", "There is something wrong with OpenCV");
         } else {
@@ -52,47 +83,6 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
             run();
         }
     }
-
-    /**
-     *     private void setUpCamera() {
-     *         CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-     *         try {
-     *             for (String cameraId : cameraManager.getCameraIdList()) {
-     *                 CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
-     *                 // Skip front facing camera
-     *                 if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == cameraCharacteristics.LENS_FACING_FRONT) {
-     *                     continue;
-     *                 }
-     *                 mCameraId = cameraId;
-     *                 return;
-     *             }
-     *         } catch (CameraAccessException e) {
-     *             e.printStackTrace();
-     *         }
-     *     }
-     */
-
-    private void setUpCamera() {
-        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        try {
-            String[] cameraID;
-            cameraID = cameraManager.getCameraIdList();
-            for (int i = 0; i < cameraID.length; i++) {
-                CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraID[0]);
-                Log.e("TAG", cameraID[i]);
-            }
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                cameraManager.setTorchMode(cameraID[0], true);
-//            }
-
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-//    private void openCamera(String cameraId, CameraDevice.StateCallback callback, Handler handler) {
-//
-//    }
 
 
     private void run() {
@@ -111,20 +101,22 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
 
             @Override
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-                // Computing the frames.
-//                Mat rgb = inputFrame.rgba();
-//                Mat gray = new Mat();
-//                Imgproc.cvtColor(rgb, gray, Imgproc.COLOR_RGB2GRAY);
-//                return gray;
-
                 Mat frame = inputFrame.rgba();
-                Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2GRAY);
-                // when it is is even
-//                if (counter % 2 == 0) {
-//                    Core.flip(frame, frame, 1);
-//                    Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGBA2GRAY);
-//                }
-//                counter += 1;
+                if (frameCount == 1) {
+                    final String a = String.valueOf(azimuth);
+                    final String p = String.valueOf(pitch);
+                    final String r = String.valueOf(roll);
+                    final Snapshot currentView = new Snapshot(frame, azimuth, pitch, roll);
+                    Snapshot best_match = route.getBestMatch(currentView.getPrepoImage());
+                    Double difference = route.computeAbsDiff(currentView.getPrepoImage(),best_match.getPrepoImage());
+                    Log.e("diff ", String.valueOf(difference));
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                        }
+                    });
+                }
                 return frame;
             }
         };
@@ -168,5 +160,37 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
         }
+    }
+
+    float[] mGravity;
+    float[] mGeomagnetic;
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+            mGravity = event.values;
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+            mGeomagnetic = event.values;
+        if (mGravity != null && mGeomagnetic != null) {
+            float R[] = new float[9];
+            float I[] = new float[9];
+            boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+            if (success) {
+                float orientation[] = new float[3];
+                SensorManager.getOrientation(R, orientation);
+                azimuth = orientation[0]; // orientation contains: azimut, pitch and roll
+                pitch = orientation[1];
+                roll = orientation[2];
+//                azimuthTv.setText("Azimuth: " + azimuth);
+//                pitchTv.setText("Pitch: " + pitch);
+//                rollTv.setText("Roll: " + roll);
+                //System.out.println("azimut: " + azimut +  " " + "pitch: " + pitch + " " + "roll: "+ roll);
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }
