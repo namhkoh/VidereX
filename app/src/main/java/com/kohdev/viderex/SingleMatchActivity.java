@@ -46,6 +46,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     Sensor accelerometer, magnetometer;
     Vibrator v;
     float azimuth, pitch, roll;
+    float incoming_azimuth, incoming_pitch, incoming_roll;
     TextView azimuthTv, pitchTv, rollTv;
     int frameCount;
 
@@ -66,11 +67,11 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         pitchTv = findViewById(R.id.pitch);
         rollTv = findViewById(R.id.roll);
 
-        float incoming_azimuth = intent.getFloatExtra("azimuth",-1);
-        float incoming_pitch = intent.getFloatExtra("pitch",-1);
-        float incoming_roll = intent.getFloatExtra("roll",-1);
+        incoming_azimuth = intent.getFloatExtra("azimuth", -1);
+        incoming_pitch = intent.getFloatExtra("pitch", -1);
+        incoming_roll = intent.getFloatExtra("roll", -1);
 
-        System.out.println("azimuth_inc : " + incoming_azimuth +  " " + "pitch_inc : " + incoming_pitch + " " + "roll_inc: "+ incoming_roll);
+        System.out.println("azimuth_inc : " + incoming_azimuth + " " + "pitch_inc : " + incoming_pitch + " " + "roll_inc: " + incoming_roll);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -195,9 +196,10 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        //.gray for gray scale
+        //gray for gray scale
         Mat frame = inputFrame.rgba();
         Mat resizedFrame = prepare_data(frame, 100, 50);
+
         if (frameCount == 5) {
             final double diff = computeAbsDiff(resizedImage, resizedFrame);
             Log.e("diff ", String.valueOf(diff));
@@ -277,6 +279,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
      * @return Difference value
      */
     private Double computeAbsDiff(Mat current, Mat goal) {
+        int range = 10;
         int w = current.width();
         int h = current.height();
         Mat error = Mat.zeros(w, h, CV_8UC1);
@@ -291,11 +294,16 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         Scalar s = Core.sumElems(error);
         System.out.println(s);
 
-        // Vibrate for 400 milliseconds
+
         if (s.val[0] <= 7000) {
             v.vibrate(100);
         }
 
+//        if (s.val[0] <= 7000) {
+//            if (Math.abs(incoming_azimuth - azimuth) <= range && Math.abs(incoming_pitch - pitch) <= range && Math.abs(incoming_roll - roll) <= range) {
+//                v.vibrate(100);
+//            }
+//        }
 
         return s.val[0];
     }
