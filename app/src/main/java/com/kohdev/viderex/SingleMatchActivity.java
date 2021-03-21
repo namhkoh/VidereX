@@ -52,9 +52,17 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     private Bitmap goalImage;
     private Mat resizedImage;
     private ImageView differenceImageView;
+    private SensorManager mSensorManager;
+    Sensor accelerometer;
+    Sensor magnetometer;
     private TextView diffVal;
     Vibrator v;
-
+    float azimut;
+    float pitch;
+    float roll;
+    TextView azimuttv;
+    TextView pitchtv;
+    TextView rolltv;
     int frameCount;
 
     @Override
@@ -68,6 +76,14 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 
 //        differenceImageView = findViewById(R.id.differenceView);
         diffVal = findViewById(R.id.differenceValue);
+
+        azimuttv = findViewById(R.id.azimut);
+        pitchtv = findViewById(R.id.pitch);
+        rolltv = findViewById(R.id.roll);
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         frameCount = 0;
         // Get instance of Vibrator from current Context
@@ -83,28 +99,6 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         resizedImage = new Mat();
         resizedImage = prepare_data(goalTmp, 100, 50);
 
-
-//        ImageView goalImageView = findViewById(R.id.goalView);
-//        goalImageView.setImageBitmap(convertMatToBitMap(resizedImage));
-
-//        Size size = new Size(1920, 864);
-//        Imgproc.resize(goalTmp, resizedImage, size);
-//        Imgproc.cvtColor(resizedImage, resizedImage, Imgproc.COLOR_BGR2GRAY);
-
-//        List<Integer> values = new ArrayList<>();
-//
-//        for (int i = 0; i < resizedImage.rows(); i++) {
-//            for (int j = 0; j < resizedImage.cols(); j++) {
-//                values.add((int) resizedImage.get(i, j)[0]);
-//            }
-//        }
-//
-//        Log.e("len", String.valueOf(values.size()));
-
-        //debug to show output.
-
-//        ImageView testView = findViewById(R.id.testView);
-//        testView.setImageBitmap(convertMatToBitMap(resizedImage));
 
     }
 
@@ -128,9 +122,31 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         return resizeImage;
     }
 
+    float[] mGravity;
+    float[] mGeomagnetic;
+
     @Override
     public void onSensorChanged(SensorEvent event) {
-
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+            mGravity = event.values;
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+            mGeomagnetic = event.values;
+        if (mGravity != null && mGeomagnetic != null) {
+            float R[] = new float[9];
+            float I[] = new float[9];
+            boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+            if (success) {
+                float orientation[] = new float[3];
+                SensorManager.getOrientation(R, orientation);
+                azimut = orientation[0]; // orientation contains: azimut, pitch and roll
+                pitch = orientation[1];
+                roll = orientation[2];
+                azimuttv.setText("Azimut: " + azimut);
+                pitchtv.setText("Pitch: " + pitch);
+                rolltv.setText("Roll: " + roll);
+                //System.out.println("azimut: " + azimut +  " " + "pitch: " + pitch + " " + "roll: "+ roll);
+            }
+        }
     }
 
     @Override
@@ -214,6 +230,8 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     protected void onResume() {
         super.onResume();
         // Check if OpenCV has loaded properly
+        mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
         if (!OpenCVLoader.initDebug()) {
             Log.e("Error", "There is something wrong with OpenCV");
         } else {
@@ -224,6 +242,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     @Override
     protected void onPause() {
         super.onPause();
+        mSensorManager.unregisterListener(this);
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
         }
@@ -286,7 +305,6 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         if (s.val[0] <= 7000) {
             v.vibrate(100);
         }
-
 
 
         return s.val[0];

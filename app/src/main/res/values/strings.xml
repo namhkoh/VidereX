@@ -9,5 +9,8 @@
     <string name="goalImageView">Goal image</string>
     <string name="differenceImageView">Difference image</string>
     <string name="diffVal"> </string>
+    <string name="azimut">azimut</string>
+    <string name="pitch">pitch</string>
+    <string name="roll">roll</string>
 
 </resources>
