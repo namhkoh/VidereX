@@ -53,6 +53,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     private Mat resizedImage;
     private ImageView differenceImageView;
     private TextView diffVal;
+    Vibrator v;
 
     int frameCount;
 
@@ -65,11 +66,12 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         mOpenCvCameraView = findViewById(R.id.OpenCVCamera);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-        differenceImageView = findViewById(R.id.differenceView);
+//        differenceImageView = findViewById(R.id.differenceView);
         diffVal = findViewById(R.id.differenceValue);
 
         frameCount = 0;
-
+        // Get instance of Vibrator from current Context
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
 
         // Loading goal image from previous activity
@@ -79,7 +81,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         // Resizing image to match the preview frame
         Mat goalTmp = bitmapToMat(goalImage);
         resizedImage = new Mat();
-        resizedImage = prepare_data(goalTmp, 250, 150);
+        resizedImage = prepare_data(goalTmp, 100, 50);
 
 
 //        ImageView goalImageView = findViewById(R.id.goalView);
@@ -121,7 +123,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         Imgproc.resize(img, resizeImage, size);
         // Gray scale the image
         Imgproc.cvtColor(resizeImage, resizeImage, Imgproc.COLOR_BGR2GRAY);
-        // Apply Histogram equlisation to image
+        // Apply Histogram eq to image
         Imgproc.equalizeHist(resizeImage, resizeImage);
         return resizeImage;
     }
@@ -189,7 +191,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         //.gray for gray scale
         Mat frame = inputFrame.rgba();
-        Mat resizedFrame = prepare_data(frame, 250, 150);
+        Mat resizedFrame = prepare_data(frame, 100, 50);
         if (frameCount == 5) {
             final double diff = computeAbsDiff(resizedImage, resizedFrame);
             Log.e("diff ", String.valueOf(diff));
@@ -265,19 +267,27 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
      * @param goal    - Goal view
      * @return Difference value
      */
-    private static Double computeAbsDiff(Mat current, Mat goal) {
+    private Double computeAbsDiff(Mat current, Mat goal) {
         int w = current.width();
         int h = current.height();
         Mat error = Mat.zeros(w, h, CV_8UC1);
-        Mat current_norm= new Mat();
+        Mat current_norm = new Mat();
         Mat goal_norm = new Mat();
         //Normalize input
-        current.convertTo(current_norm,CV_32F,1.0/255,0);
-        goal.convertTo(goal_norm,CV_32F,1.0/255,0);
-
+//        current.convertTo(current_norm, CV_32F, 1.0 / 255, 0);
+//        goal.convertTo(goal_norm, CV_32F, 1.0 / 255, 0);
+        Core.normalize(current, current_norm, 255, Core.NORM_L2);
+        Core.normalize(goal, goal_norm, 255, Core.NORM_L2);
         Core.absdiff(current_norm, goal_norm, error);
         Scalar s = Core.sumElems(error);
         System.out.println(s);
+
+        // Vibrate for 400 milliseconds
+        if (s.val[0] <= 7000) {
+            v.vibrate(100);
+        }
+
+
 
         return s.val[0];
     }
