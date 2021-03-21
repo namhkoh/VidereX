@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
-        android:text="@string/azimut"
+        android:text="@string/azimuth"
         android:textColor="#FFFFFF"
         opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
         opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />

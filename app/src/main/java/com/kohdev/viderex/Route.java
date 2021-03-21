@@ -5,4 +5,6 @@ package com.kohdev.viderex;
  */
 public class Route {
 
+    private String name;
+
 }

@@ -2,15 +2,21 @@
     // App name
     <string name="app_name">VidereX</string>
     // MenuActivity
-    <string name="SelectRouteButton">Select Route</string>
+    <string name="SelectRouteButton">Record Route</string>
     <string name="FollowRouteButton">Follow Route</string>
     <string name="singleMatch">Single Match</string>
     // SingleMatchActivity
     <string name="goalImageView">Goal image</string>
     <string name="differenceImageView">Difference image</string>
     <string name="diffVal"> </string>
-    <string name="azimut">azimut</string>
+    <string name="azimuth">azimuth</string>
     <string name="pitch">pitch</string>
     <string name="roll">roll</string>
+    // RecordRouteActivity
+    <string name="viewCount">Stored views</string>
+    <string name="startRoute">Record Route</string>
+    <string name="finishRoute">Save Route</string>
+    <string name="routeName"> </string>
+    <string name="routeNamePlaceholder">i.e Home path</string>
 
 </resources>
