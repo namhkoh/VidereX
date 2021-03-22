@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
@@ -39,8 +40,8 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
     private SensorManager mSensorManager;
     Sensor accelerometer, magnetometer;
 
-
     private Vibrator v;
+    TextView diff;
 
 
     int counter = 0;
@@ -50,17 +51,18 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_follow_route);
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.MainCameraView);
-        mOpenCvCameraView.setMaxFrameSize(1920, 1080);
+        mOpenCvCameraView = findViewById(R.id.MainCameraView);
+//        mOpenCvCameraView.setMaxFrameSize(1920, 1080);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        diff = findViewById(R.id.difference);
 
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         frameCount = 0;
@@ -108,14 +110,17 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
                     final String r = String.valueOf(roll);
                     final Snapshot currentView = new Snapshot(frame, azimuth, pitch, roll);
                     Snapshot best_match = route.getBestMatch(currentView.getPrepoImage());
-                    Double difference = route.computeAbsDiff(currentView.getPrepoImage(),best_match.getPrepoImage());
+                    final double difference = route.computeAbsDiff(currentView.getPrepoImage(), best_match.getPrepoImage());
                     Log.e("diff ", String.valueOf(difference));
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
+                            diff.setText("Difference: " + difference);
                         }
                     });
+                    frameCount = 0;
+                } else {
+                    frameCount++;
                 }
                 return frame;
             }
