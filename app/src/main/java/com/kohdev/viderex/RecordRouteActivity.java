@@ -79,17 +79,6 @@ public class RecordRouteActivity extends AppCompatActivity {
     }
 
     private void storeViews() {
-        // This method will store the taken images and associate them to a route.
-        SharedPreferences.Editor editor = MenuActivity.prefs.edit();
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Uri.class, new UriSerializer())
-                .create();
-        String json = gson.toJson(route);
-        route.getName();
-        Set s = route.getSnapshots();
-        Log.e("size", String.valueOf(s.size()));
-        editor.putString(route.getName(), json);
-        editor.apply();
     }
 
     private void captureViews() {
@@ -167,9 +156,9 @@ public class RecordRouteActivity extends AppCompatActivity {
                         float pitch = -1;
                         float roll = -1;
 
-                        // Update the stored view count here.
-                        route.addNewSnapshot(mat, fileUri, azimuth, pitch, roll);
-                        viewCount.setText(route.getSnapshots().size() + " images stored");
+//                        // Update the stored view count here.
+//                        route.addNewSnapshot(mat, fileUri, azimuth, pitch, roll);
+//                        viewCount.setText(route.getSnapshots().size() + " images stored");
                 }
         }
     }

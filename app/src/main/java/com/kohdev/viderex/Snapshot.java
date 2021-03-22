@@ -19,28 +19,25 @@ import java.io.IOException;
 import static org.opencv.core.CvType.CV_8UC1;
 
 /**
- * d
+ * This class represents an instance of a snapshot.
  */
 public class Snapshot {
 
-    private Mat preprocessedImg;
-    private Uri imageUri;
-    int orientThreshold = 10;
-
+    private Mat preprocessed_img;
+    private Uri preprocessed_img_uri;
     private double azimuth, pitch, roll;
 
     public Snapshot(Mat image, Uri imageUri, double azimuth, double pitch, double roll) {
-
-        this.imageUri = imageUri;
+        this.preprocessed_img = prep_img(image, 100, 50);
+        this.preprocessed_img_uri = imageUri;
         this.azimuth = azimuth;
         this.pitch = pitch;
         this.roll = roll;
-        this.preprocessedImg = preprocessImage(image, 100, 50);
     }
 
     public Snapshot(Context context, Uri imageUri, double azimuth, double pitch, double roll) {
 
-        this.imageUri = imageUri;
+        this.preprocessed_img_uri = imageUri;
 
         this.azimuth = azimuth;
         this.pitch = pitch;
@@ -48,53 +45,52 @@ public class Snapshot {
 
         Mat mat = uriToMat(context, imageUri);
 
-        this.preprocessedImg = preprocessImage(mat, 100, 50);
+        this.preprocessed_img = prep_img(mat, 100, 50);
 
     }
 
     public Snapshot(Mat frame, float azimuth, float pitch, float roll) {
-        this.imageUri = null;
+        this.preprocessed_img_uri = null;
 
         this.azimuth = azimuth;
         this.pitch = pitch;
         this.roll = roll;
 
 
-        this.preprocessedImg = preprocessImage(frame, 100, 50);
+        this.preprocessed_img = prep_img(frame, 100, 50);
     }
 
-    public Mat getPrepoImage() {
-        return this.preprocessedImg;
+    public Mat getPreprocessed_img() {
+        return this.preprocessed_img;
     }
 
-    public Uri getImageUri() {
-        return this.imageUri;
+    public Uri getPreprocessed_img_uri() {
+        return this.preprocessed_img_uri;
     }
 
-    public Bitmap getPrepoBitmap() {
-        return matToBitmap(this.preprocessedImg);
+    public Bitmap getProcessedBitmap() {
+        return matToBitmap(this.preprocessed_img);
     }
 
-    private Bitmap matToBitmap(Mat orig_image) {
-
-        // Clone image! Important otherwise colour conversion is applied to original...
-        Mat mat_image = orig_image.clone();
-
-        int w = mat_image.width();
-        int h = mat_image.height();
-        int type = mat_image.type();
-
-        // Convert image to bitmap
-        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
-        final Bitmap ciBmp = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
-
-        if (type == CV_8UC1) {
-            Imgproc.cvtColor(mat_image, mat_image, Imgproc.COLOR_GRAY2RGBA);
+    public static Bitmap UriToBitmap(Context context, Uri imgPath) {
+        Bitmap image = null;
+        try {
+            ParcelFileDescriptor parcelFileDescriptor = context.getContentResolver().openFileDescriptor(imgPath, "r");
+            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+            image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+            parcelFileDescriptor.close();
+        } catch (IOException e) {
+            Log.e("Snapshot", "Error loading snapshot image bitmap from URI.", e);
         }
-        Utils.matToBitmap(mat_image, ciBmp);
-
-        return ciBmp;
+        return image;
     }
+
+
+    static private Mat uriToMat(Context context, Uri imageUri) {
+
+        return bitmapToMat(UriToBitmap(context, imageUri));
+    }
+
 
     static private Mat bitmapToMat(Bitmap image) {
 
@@ -121,67 +117,28 @@ public class Snapshot {
         return mat;
     }
 
-    static private Mat uriToMat(Context context, Uri imageUri) {
+    private Bitmap matToBitmap(Mat orig_image) {
 
-        return bitmapToMat(uriToBitmap(context, imageUri));
-    }
+        // Clone image! Important otherwise colour conversion is applied to original...
+        Mat mat_image = orig_image.clone();
 
-    static private Bitmap uriToBitmap(Context context, Uri selectedFileUri) {
+        int w = mat_image.width();
+        int h = mat_image.height();
+        int type = mat_image.type();
 
-        Bitmap image = null;
+        // Convert image to bitmap
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+        final Bitmap ciBmp = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
 
-        try {
-            ParcelFileDescriptor parcelFileDescriptor = context.getContentResolver().openFileDescriptor(selectedFileUri, "r");
-            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-            image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-
-            parcelFileDescriptor.close();
-        } catch (IOException e) {
-            Log.e("Snapshot", "Error loading snapshot image bitmap from URI.", e);
+        if (type == CV_8UC1) {
+            Imgproc.cvtColor(mat_image, mat_image, Imgproc.COLOR_GRAY2RGBA);
         }
+        Utils.matToBitmap(mat_image, ciBmp);
 
-        return image;
+        return ciBmp;
     }
 
-    public void restoreImageFromFile(Context context) {
-
-        // Load image data from file URI to bitmap
-        if (this.imageUri != null) {
-
-            Bitmap image = uriToBitmap(context, this.imageUri);
-
-            // Convert to Mat and preprocess
-            Mat mat = bitmapToMat(image);
-
-            if (mat != null) {
-                this.preprocessedImg = preprocessImage(mat, 100, 50);
-            } else {
-                this.preprocessedImg = Mat.zeros((int) 100, (int) 50, CV_8UC1);
-            }
-        } else {
-            Log.e("Snapshot", "Error attempting to load image from unassigned URI.");
-        }
-    }
-
-    public boolean[] checkIMU(double azimuth, double pitch, double roll) {
-
-        boolean a = (Math.abs(this.azimuth - azimuth) >= orientThreshold);
-        boolean p = (Math.abs(this.pitch - pitch) >= orientThreshold);
-        boolean r = (Math.abs(this.roll - roll) >= orientThreshold);
-
-        return new boolean[]{a, p, r};
-
-    }
-
-    /**
-     * This method will prepare the data to be used for the absolute diffferencing function
-     *
-     * @param img    input image
-     * @param width  input image width
-     * @param height - input image height
-     * @return resizedImage processed
-     */
-    private Mat preprocessImage(Mat img, int width, int height) {
+    private Mat prep_img(Mat img, int width, int height) {
         // Resize image
         Mat resizeImage = new Mat();
         Size size = new Size(width, height);

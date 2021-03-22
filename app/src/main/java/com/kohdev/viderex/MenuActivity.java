@@ -97,83 +97,11 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-        loadSavedData();
         if (routes == null) routes = new HashMap<>();
         prefs = getPreferences(Context.MODE_PRIVATE);
 
     }
 
-    private void loadSavedData() {
-        loadRoutesFromDir();
-    }
-
-    // From: https://stackoverflow.com/questions/326390/how-do-i-create-a-java-string-from-the-contents-of-a-file
-    private String readFile(File file) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line = null;
-        StringBuilder stringBuilder = new StringBuilder();
-        String ls = System.getProperty("line.separator");
-
-        try {
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-                stringBuilder.append(ls);
-            }
-
-            return stringBuilder.toString();
-        } finally {
-            reader.close();
-        }
-    }
-
-    private void loadRoutesFromDir() {
-
-        // Define file filters
-        FilenameFilter imageFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg");
-            }
-        };
-
-        // Load routes from /sdcard/Routes folder
-        String path = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() + "/Navigant/Routes";
-
-        // Find route sub-directories
-        File routesDir = new File(path);
-        File[] imageDir = routesDir.listFiles();
-
-        // Find image files within directories
-        for (int fi = 0; fi < imageDir.length; fi++) {
-
-            if (imageDir[fi].isDirectory()) {
-
-                // Get route name
-                Route route = new Route();
-                route.setName(imageDir[fi].toString());
-
-                // Get list of images for this route
-                File[] imageFiles = imageDir[fi].listFiles(imageFilter);
-
-                // Add images to route
-                for (int ri = 0; ri < imageFiles.length; ri++) {
-
-                    final float azimuth = -1.0f;
-                    final float pitch = -1.0f;
-                    final float roll = -1.0f;
-
-                    Uri imageUri = Uri.fromFile(imageFiles[ri]);
-
-                    route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
-
-                }
-                // Add route to list
-                routes.put(route.getName(), route);
-            }
-
-        }
-
-    }
 
     /**
      * This method will launch the single match method.

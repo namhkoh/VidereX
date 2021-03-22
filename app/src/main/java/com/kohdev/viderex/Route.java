@@ -15,13 +15,13 @@ import java.util.Set;
 import static org.opencv.core.CvType.CV_8UC1;
 
 /**
- * Class representing the route
+ * Class representing the route. A route is a collection of snapshots.
  */
 public class Route {
 
     private String name;
-    Vibrator v;
     private Set<Snapshot> snapshots;
+    Vibrator v;
 
     public Route() {
         this.snapshots = new HashSet<>();
@@ -54,17 +54,13 @@ public class Route {
 
     public Snapshot getBestMatch(Mat current) {
         Snapshot bestMatch = null;
-        double min_error = Double.MIN_VALUE;
-
         for (Snapshot snapshot : snapshots) {
-            double absDiff = computeAbsDiff(current, snapshot.getPrepoImage());
-            if (absDiff <= min_error) {
+            double absDiff = computeAbsDiff(current, snapshot.getPreprocessed_img());
+            if (absDiff <= 7000) {
                 bestMatch = snapshot;
-                min_error = absDiff;
             }
         }
         return bestMatch;
-
     }
 
     public Double computeAbsDiff(Mat current, Mat goal) {
@@ -94,4 +90,5 @@ public class Route {
 
         return s.val[0];
     }
+
 }

@@ -46,9 +46,7 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
 
     int counter = 0;
     private int frameCount;
-    String mCameraId;
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
@@ -56,7 +54,6 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_follow_route);
         mOpenCvCameraView = findViewById(R.id.MainCameraView);
-//        mOpenCvCameraView.setMaxFrameSize(1920, 1080);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -104,24 +101,6 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
             @Override
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
                 Mat frame = inputFrame.rgba();
-                if (frameCount == 1) {
-                    final String a = String.valueOf(azimuth);
-                    final String p = String.valueOf(pitch);
-                    final String r = String.valueOf(roll);
-                    final Snapshot currentView = new Snapshot(frame, azimuth, pitch, roll);
-                    Snapshot best_match = route.getBestMatch(currentView.getPrepoImage());
-                    final double difference = route.computeAbsDiff(currentView.getPrepoImage(), best_match.getPrepoImage());
-                    Log.e("diff ", String.valueOf(difference));
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            diff.setText("Difference: " + difference);
-                        }
-                    });
-                    frameCount = 0;
-                } else {
-                    frameCount++;
-                }
                 return frame;
             }
         };
