@@ -19,6 +19,12 @@
     <string name="routeName"> </string>
     <string name="routeNamePlaceholder">i.e Home path</string>
     // FollowRouteActivity
-    
+    // SelectRouteActivity
+    <string-array name="RoutNames">
+        <item>test route 1</item>
+        <item>test route 2</item>
+        <item>test route 3</item>
+    </string-array>
+
 
 </resources>

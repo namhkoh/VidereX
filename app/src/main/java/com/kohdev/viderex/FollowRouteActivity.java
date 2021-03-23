@@ -28,7 +28,6 @@ import org.opencv.imgproc.Imgproc;
 /**
  * This class will handle the recording of the route.
  */
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class FollowRouteActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener {
 
     private CameraBridgeViewBase mOpenCvCameraView;
@@ -43,9 +42,9 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
     private Vibrator v;
     TextView diff;
 
-
     int counter = 0;
     private int frameCount;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +64,20 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
         frameCount = 0;
 
         // Set up route
-        String routeName = "test";
+        String routeName;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras == null) {
+                routeName = null;
+            } else {
+                routeName = extras.getString("ROUTE_NAME");
+            }
+        } else {
+            routeName = (String) savedInstanceState.getSerializable("");
+        }
         route = MenuActivity.routes.get(routeName);
+        Log.e("instance route", String.valueOf(route));
+        Log.e("instance route: ", String.valueOf(route.getName()));
     }
 
     @Override
@@ -101,6 +112,28 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
             @Override
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
                 Mat frame = inputFrame.rgba();
+                final Snapshot currentView = new Snapshot(frame, azimuth, pitch, roll);
+                String routeName = route.getName();
+                Snapshot best_match = route.getBestMatch(currentView.getPreprocessed_img());
+                final double diff_val = Route.computeAbsDiff(currentView.getPreprocessed_img(), best_match.getPreprocessed_img());
+                Log.e("diff", String.valueOf(diff_val));
+                if (frameCount == 1) {
+                    final String a = String.valueOf(azimuth);
+                    final String p = String.valueOf(pitch);
+                    final String r = String.valueOf(roll);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            diff.setText(String.valueOf(diff_val));
+                            if (diff_val <= 7000) {
+                                v.vibrate(100);
+                            }
+                        }
+                    });
+                    frameCount = 0;
+                } else {
+                    frameCount++;
+                }
                 return frame;
             }
         };

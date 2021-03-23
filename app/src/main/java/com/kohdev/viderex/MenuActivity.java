@@ -24,6 +24,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.opencv.android.OpenCVLoader;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,6 +39,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * This activity will provide hte user with options to either follow a route or record a route.
@@ -49,8 +55,6 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     Uri fileUri;
 
     public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-    public static final int MEDIA_TYPE_IMAGE = 1;
-    public static final int MEDIA_TYPE_VIDEO = 2;
 
     String currentPhotoPath;
 
@@ -64,6 +68,8 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        OpenCVLoader.initDebug();
 
         checkPermissions();
         super.onCreate(savedInstanceState);
@@ -97,8 +103,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-        if (routes == null) routes = new HashMap<>();
-        prefs = getPreferences(Context.MODE_PRIVATE);
+        loadSavedData();
+//        if (routes == null) routes = new HashMap<>();
+//        prefs = getPreferences(Context.MODE_PRIVATE);
 
     }
 
@@ -122,9 +129,41 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
      * Method to route the user to follow route
      */
     private void follow_route() {
-        Intent intent = new Intent(this, FollowRouteActivity.class);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+//        Intent intent = new Intent(this, FollowRouteActivity.class);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+//        startActivity(intent);
+        Intent intent = new Intent(this, SelectRouteActivity.class);
         startActivity(intent);
+    }
+
+    // From: https://stackoverflow.com/questions/326390/how-do-i-create-a-java-string-from-the-contents-of-a-file
+    private String readFile(File file) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String line = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        String ls = System.getProperty("line.separator");
+
+        try {
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+                stringBuilder.append(ls);
+            }
+
+            return stringBuilder.toString();
+        } finally {
+            reader.close();
+        }
+    }
+
+    public void loadSavedData() {
+        loadRoutes();
+    }
+
+    /**
+     * This function will load the images from directory.
+     */
+    private void loadRoutes() {
+
     }
 
     private void dispatchTakePictureIntent() {
@@ -176,14 +215,6 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         currentPhotoPath = image.getAbsolutePath();
         Log.e("current photo", currentPhotoPath);
         return image;
-    }
-
-    private void galleryAddPic() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        File f = new File(currentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
     }
 
 

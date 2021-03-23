@@ -27,6 +27,10 @@ public class Snapshot {
     private Uri preprocessed_img_uri;
     private double azimuth, pitch, roll;
 
+    public Snapshot(Uri imageUri) {
+        this.preprocessed_img_uri = imageUri;
+    }
+
     public Snapshot(Mat image, Uri imageUri, double azimuth, double pitch, double roll) {
         this.preprocessed_img = prep_img(image, 100, 50);
         this.preprocessed_img_uri = imageUri;

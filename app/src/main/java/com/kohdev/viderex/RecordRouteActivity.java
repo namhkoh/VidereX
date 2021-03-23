@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -46,6 +48,8 @@ public class RecordRouteActivity extends AppCompatActivity {
     Uri fileUri;
     Route route;
     String currentPhotoPath;
+    String routeName;
+    EditText routeNameInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +60,9 @@ public class RecordRouteActivity extends AppCompatActivity {
         Button recordRoute = findViewById(R.id.startRoute);
         Button saveRoute = findViewById(R.id.finishRoute);
 
-        route = new Route();
-
-        final EditText routeNameInput = findViewById(R.id.routeName);
+        routeNameInput = findViewById(R.id.routeName);
         viewCount = findViewById(R.id.viewCount);
+        route = new Route();
 
         recordRoute.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,13 +75,24 @@ public class RecordRouteActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 storeViews();
-                Toast.makeText(getApplicationContext(), "Route " + routeNameInput.getText() + " saved!", Toast.LENGTH_SHORT).show();
-                finish();
             }
         });
     }
 
+    /**
+     * This function will store the taken view into views.
+     */
     private void storeViews() {
+        routeName = routeNameInput.getText().toString();
+        route = new Route(routeName, route.getSnapshots());
+        // Save the current route as bundle? and pass this to the list view containing all the routes.
+        System.out.println("------------------------");
+        System.out.println("storing views!");
+        System.out.println("route name: " + route.getName());
+        System.out.println("snapshots: " + route.getSnapshots());
+        System.out.println("route size: " + route.getSnapshots().size());
+        System.out.println("------------------------");
+        // Send this bundle to the selection activity? 
     }
 
     private void captureViews() {
@@ -152,13 +166,17 @@ public class RecordRouteActivity extends AppCompatActivity {
                         Bitmap bitmap = BitmapFactory.decodeStream(image_stream);
                         Mat mat = new Mat();
                         Utils.bitmapToMat(bitmap, mat);
+                        Log.e("mat ", String.valueOf(mat.width()));
+                        Log.e("mat ", String.valueOf(mat.height()));
+
+                        //TODO: pass in the actual a,p,r values of the snapshots taken
                         float azimuth = -1;
                         float pitch = -1;
                         float roll = -1;
 
 //                        // Update the stored view count here.
-//                        route.addNewSnapshot(mat, fileUri, azimuth, pitch, roll);
-//                        viewCount.setText(route.getSnapshots().size() + " images stored");
+                        route.addNewSnapshot(fileUri);
+                        viewCount.setText(route.getSnapshots().size() + " images stored");
                 }
         }
     }

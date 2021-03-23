@@ -4,6 +4,7 @@ import android.content.Context;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Vibrator;
+import android.util.Log;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -44,17 +45,28 @@ public class Route {
         return this.snapshots;
     }
 
+    public void addNewSnapshot(Uri imageUri) {
+        Log.e("snapshot taken: ", String.valueOf(imageUri));
+        snapshots.add(new Snapshot(imageUri));
+    }
+
     public void addNewSnapshot(Mat image, Uri imageUri, double azimuth, double pitch, double roll) {
+        Log.e("snapshot taken: ", String.valueOf(imageUri));
+        Log.e("snapshot azimuth: ", String.valueOf(azimuth));
+        Log.e("snapshot pitch: ", String.valueOf(pitch));
+        Log.e("snapshot roll: ", String.valueOf(roll));
         snapshots.add(new Snapshot(image, imageUri, azimuth, pitch, roll));
     }
 
     public void addNewSnapshot(Context context, Uri imageUri, double azimuth, double pitch, double roll) {
+        Log.e("context", String.valueOf(context));
         snapshots.add(new Snapshot(context, imageUri, azimuth, pitch, roll));
     }
 
     public Snapshot getBestMatch(Mat current) {
         Snapshot bestMatch = null;
         for (Snapshot snapshot : snapshots) {
+            Log.e("snapshot: ", String.valueOf(snapshot.getPreprocessed_img_uri()));
             double absDiff = computeAbsDiff(current, snapshot.getPreprocessed_img());
             if (absDiff <= 7000) {
                 bestMatch = snapshot;
@@ -63,7 +75,7 @@ public class Route {
         return bestMatch;
     }
 
-    public Double computeAbsDiff(Mat current, Mat goal) {
+    public static Double computeAbsDiff(Mat current, Mat goal) {
         int range = 10;
         int w = current.width();
         int h = current.height();
@@ -76,11 +88,6 @@ public class Route {
         Core.absdiff(current_norm, goal_norm, error);
         Scalar s = Core.sumElems(error);
         System.out.println(s);
-
-
-        if (s.val[0] <= 7000) {
-            v.vibrate(100);
-        }
 
 //        if (s.val[0] <= 7000) {
 //            if (Math.abs(incoming_azimuth - azimuth) <= range && Math.abs(incoming_pitch - pitch) <= range && Math.abs(incoming_roll - roll) <= range) {
