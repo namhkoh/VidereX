@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.opencv.android.Utils;
@@ -15,6 +17,7 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.io.Serializable;
 
 import static org.opencv.core.CvType.CV_8UC1;
 
@@ -28,10 +31,20 @@ public class Snapshot {
     private double azimuth, pitch, roll;
 
     public Snapshot(Uri imageUri) {
+        Log.e("imageUri single", String.valueOf(imageUri));
         this.preprocessed_img_uri = imageUri;
     }
 
+    public Snapshot(Uri imageUri, double azimuth, double pitch, double roll) {
+        Log.e("imageUri", String.valueOf(imageUri));
+        this.preprocessed_img_uri = imageUri;
+        this.azimuth = azimuth;
+        this.pitch = pitch;
+        this.roll = roll;
+    }
+
     public Snapshot(Mat image, Uri imageUri, double azimuth, double pitch, double roll) {
+        Log.e("imageUri with mat", String.valueOf(imageUri));
         this.preprocessed_img = prep_img(image, 100, 50);
         this.preprocessed_img_uri = imageUri;
         this.azimuth = azimuth;
@@ -40,7 +53,7 @@ public class Snapshot {
     }
 
     public Snapshot(Context context, Uri imageUri, double azimuth, double pitch, double roll) {
-
+        Log.e("imageUri with Context", String.valueOf(imageUri));
         this.preprocessed_img_uri = imageUri;
 
         this.azimuth = azimuth;
@@ -54,6 +67,7 @@ public class Snapshot {
     }
 
     public Snapshot(Mat frame, float azimuth, float pitch, float roll) {
+        Log.e("This shit ","hello world");
         this.preprocessed_img_uri = null;
 
         this.azimuth = azimuth;

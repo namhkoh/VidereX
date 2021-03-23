@@ -10,6 +10,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,8 +47,16 @@ public class Route {
     }
 
     public void addNewSnapshot(Uri imageUri) {
-        Log.e("snapshot taken: ", String.valueOf(imageUri));
+        Log.e("snapshot taken ", String.valueOf(imageUri));
         snapshots.add(new Snapshot(imageUri));
+    }
+
+    public void addNewSnapshot(Uri imageUri, double azimuth, double pitch, double roll) {
+        Log.e("snapshot taken: ", String.valueOf(imageUri));
+        Log.e("snapshot azimuth: ", String.valueOf(azimuth));
+        Log.e("snapshot pitch: ", String.valueOf(pitch));
+        Log.e("snapshot roll: ", String.valueOf(roll));
+        snapshots.add(new Snapshot(imageUri, azimuth, pitch, roll));
     }
 
     public void addNewSnapshot(Mat image, Uri imageUri, double azimuth, double pitch, double roll) {
@@ -75,7 +84,7 @@ public class Route {
         return bestMatch;
     }
 
-    public static Double computeAbsDiff(Mat current, Mat goal) {
+    public Double computeAbsDiff(Mat current, Mat goal) {
         int range = 10;
         int w = current.width();
         int h = current.height();

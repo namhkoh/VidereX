@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -43,6 +44,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     private ImageView differenceImageView;
     private SensorManager mSensorManager;
     private TextView diffVal;
+    private TextView matchQuality;
     int threshold = 7000;
     Sensor accelerometer, magnetometer;
     Vibrator v;
@@ -53,6 +55,8 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //TODO: Insert a debug mode for the difference image
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_single_match);
@@ -63,6 +67,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 
 //        differenceImageView = findViewById(R.id.differenceView);
         diffVal = findViewById(R.id.differenceValue);
+        matchQuality = findViewById(R.id.matchQuality);
 
         azimuthTv = findViewById(R.id.azimut);
         pitchTv = findViewById(R.id.pitch);
@@ -301,7 +306,10 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 //        }
         //TODO: logic to set the threshold dynamically
         if (s.val[0] <= threshold) {
+            diffVal.setTextColor(Color.GREEN);
             v.vibrate(100);
+        } else {
+            diffVal.setTextColor(Color.RED);
         }
 
         return s.val[0];

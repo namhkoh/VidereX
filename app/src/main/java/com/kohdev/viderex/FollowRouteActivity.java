@@ -4,6 +4,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,8 +13,10 @@ import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.Menu;
@@ -22,8 +26,16 @@ import android.widget.TextView;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import static org.opencv.core.CvType.CV_8UC1;
 
 /**
  * This class will handle the recording of the route.
@@ -45,11 +57,15 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
     int counter = 0;
     private int frameCount;
 
+    ArrayList<Uri> uriList = new ArrayList<Uri>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
         super.onCreate(savedInstanceState);
+        uriList = (ArrayList<Uri>) getIntent().getSerializableExtra("uriList");
+        System.out.println(uriList);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_follow_route);
         mOpenCvCameraView = findViewById(R.id.MainCameraView);
@@ -63,21 +79,21 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         frameCount = 0;
 
-        // Set up route
-        String routeName;
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if (extras == null) {
-                routeName = null;
-            } else {
-                routeName = extras.getString("ROUTE_NAME");
-            }
-        } else {
-            routeName = (String) savedInstanceState.getSerializable("");
-        }
-        route = MenuActivity.routes.get(routeName);
-        Log.e("instance route", String.valueOf(route));
-        Log.e("instance route: ", String.valueOf(route.getName()));
+//        // Set up route
+//        String routeName;
+//        if (savedInstanceState == null) {
+//            Bundle extras = getIntent().getExtras();
+//            if (extras == null) {
+//                routeName = null;
+//            } else {
+//                routeName = extras.getString("ROUTE_NAME");
+//            }
+//        } else {
+//            routeName = (String) savedInstanceState.getSerializable("");
+//        }
+//        route = MenuActivity.routes.get(routeName);
+//        Log.e("instance route", String.valueOf(route));
+//        Log.e("instance route: ", String.valueOf(route.getName()));
     }
 
     @Override
@@ -112,15 +128,18 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
             @Override
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
                 Mat frame = inputFrame.rgba();
-                final Snapshot currentView = new Snapshot(frame, azimuth, pitch, roll);
-                String routeName = route.getName();
-                Snapshot best_match = route.getBestMatch(currentView.getPreprocessed_img());
-                final double diff_val = Route.computeAbsDiff(currentView.getPreprocessed_img(), best_match.getPreprocessed_img());
+                // look at the dependencies, run a timing function, the more the better
+                Mat mat = uriToMat(getApplicationContext(), uriList.get(0));
+                Mat prep = prep_img(mat, 100, 50);
+                frame = prep_img(frame, 100, 50);
+                //final Snapshot currentView = new Snapshot(frame, azimuth, pitch, roll);
+                //Snapshot best_match = route.getBestMatch(currentView.getPreprocessed_img());
+                final double diff_val = route.computeAbsDiff(frame, prep);
                 Log.e("diff", String.valueOf(diff_val));
                 if (frameCount == 1) {
-                    final String a = String.valueOf(azimuth);
-                    final String p = String.valueOf(pitch);
-                    final String r = String.valueOf(roll);
+//                    final String a = String.valueOf(azimuth);
+//                    final String p = String.valueOf(pitch);
+//                    final String r = String.valueOf(roll);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -210,4 +229,61 @@ public class FollowRouteActivity extends AppCompatActivity implements CameraBrid
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+    private Mat uriToMat(Context context, Uri imageUri) {
+
+        return bitmapToMat(UriToBitmap(context, imageUri));
+    }
+
+    private Bitmap UriToBitmap(Context context, Uri imgPath) {
+        Bitmap image = null;
+        try {
+            ParcelFileDescriptor parcelFileDescriptor = context.getContentResolver().openFileDescriptor(imgPath, "r");
+            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+            image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+            parcelFileDescriptor.close();
+        } catch (IOException e) {
+            Log.e("Snapshot", "Error loading snapshot image bitmap from URI.", e);
+        }
+        return image;
+    }
+
+    private Mat bitmapToMat(Bitmap image) {
+
+        Mat mat = null;
+
+        if (image != null) {
+
+            int w = image.getWidth();
+            int h = image.getHeight();
+
+            Bitmap.Config config = image.getConfig();
+
+            if (config == Bitmap.Config.ARGB_8888 && w > 0 && h > 0) {
+
+                mat = new Mat(image.getHeight(), image.getWidth(), CV_8UC1);
+                Utils.bitmapToMat(image, mat);
+            } else {
+                Log.e("Snapshot", "Error loading snapshot image: Incorrect bitmap type, expected ARGB_8888.");
+            }
+        } else {
+            Log.e("Snapshot", "NULL Bitmap object passed for conversion to Mat.");
+        }
+
+        return mat;
+    }
+
+    private Mat prep_img(Mat img, int width, int height) {
+        // Resize image
+        Mat resizeImage = new Mat();
+        Size size = new Size(width, height);
+        Imgproc.resize(img, resizeImage, size);
+        // Gray scale the image
+        Imgproc.cvtColor(resizeImage, resizeImage, Imgproc.COLOR_BGR2GRAY);
+        // Apply Histogram eq to image
+        Imgproc.equalizeHist(resizeImage, resizeImage);
+        return resizeImage;
+    }
+
+
 }

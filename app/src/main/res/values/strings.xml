@@ -12,6 +12,7 @@
     <string name="azimuth">azimuth</string>
     <string name="pitch">pitch</string>
     <string name="roll">roll</string>
+    <string name="matchQuality"> </string>
     // RecordRouteActivity
     <string name="viewCount">Stored views</string>
     <string name="startRoute">Record Route</string>

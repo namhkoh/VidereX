@@ -80,6 +80,16 @@
         opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
         opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
 
+    <TextView
+        android:id="@+id/matchQuality"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="320dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/matchQuality"
+        opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
+        opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
+
     <!--    <ImageView-->
     <!--        android:id="@+id/testView"-->
     <!--        android:layout_width="match_parent"-->

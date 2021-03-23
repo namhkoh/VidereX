@@ -24,6 +24,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,9 +40,12 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This activity will provide hte user with options to either follow a route or record a route.
@@ -64,7 +70,10 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
 
     public static SharedPreferences prefs;
     public static HashMap<String, Route> routes;
-
+    Set<Snapshot> snapshots;
+    String routeName;
+    Intent intent;
+    ArrayList<Uri> uriList = new ArrayList<Uri>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +83,7 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         checkPermissions();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
 
         Button selectRouteBtn = findViewById(R.id.selectRoute);
         selectRouteBtn.setOnClickListener(new View.OnClickListener() {
@@ -103,9 +113,16 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
+        if (routes == null) {
+            routes = new HashMap<>();
+        } else {
+            String json = (String) getIntent().getSerializableExtra("json_route");
+            uriList = (ArrayList<Uri>) getIntent().getSerializableExtra("uriList");
+            System.out.println(json);
+            System.out.println(uriList);
+        }
+        prefs = getPreferences(Context.MODE_PRIVATE);
         loadSavedData();
-//        if (routes == null) routes = new HashMap<>();
-//        prefs = getPreferences(Context.MODE_PRIVATE);
 
     }
 
@@ -131,7 +148,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     private void follow_route() {
 //        Intent intent = new Intent(this, FollowRouteActivity.class);
 //        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+//        intent.putExtra("uriList",uriList);
 //        startActivity(intent);
+
         Intent intent = new Intent(this, SelectRouteActivity.class);
         startActivity(intent);
     }
@@ -156,13 +175,96 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void loadSavedData() {
-        loadRoutes();
+
     }
 
-    /**
-     * This function will load the images from directory.
-     */
-    private void loadRoutes() {
+
+    private void loadRoutesFromJSON(List<String> jsonList) {
+
+        // Manually parse JSON object
+        for (String json : jsonList) {
+
+            try {
+
+                JSONObject obj = new JSONObject(json);
+
+                // Get route name
+                Route route = new Route();
+                route.setName(obj.getString("name"));
+
+                // Reload snapshots
+                JSONArray snap = obj.getJSONArray("snapshots");
+
+
+                for (int i = 0; i < snap.length(); i++) {
+
+                    JSONObject snapObj = snap.getJSONObject(i);
+
+                    float azimuth = (float) snapObj.getDouble("azimuth");
+                    float pitch = (float) snapObj.getDouble("pitch");
+                    float roll = (float) snapObj.getDouble("roll");
+
+                    Uri imageUri = Uri.parse(snapObj.getString("preprocessed_img_uri"));
+
+                    route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
+
+                }
+
+                // Add route to list
+                routes.put(route.getName(), route);
+
+            } catch (JSONException e) {
+                Log.e("MainActivity", "Error loading JSON object for Route.", e);
+            }
+        }
+    }
+
+    private void loadRoutesFromDir() {
+
+        // Define file filters
+        FilenameFilter imageFilter = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(".png") || name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".jpeg");
+            }
+        };
+
+        // Load routes from /sdcard/Routes folder
+        String path = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() + "/Navigant/Routes";
+
+        // Find route sub-directories
+        File routesDir = new File(path);
+        File[] imageDir = routesDir.listFiles();
+
+        // Find image files within directories
+        for (int fi = 0; fi < imageDir.length; fi++) {
+
+            if (imageDir[fi].isDirectory()) {
+
+                // Get route name
+                Route route = new Route();
+                route.setName(imageDir[fi].toString());
+
+                // Get list of images for this route
+                File[] imageFiles = imageDir[fi].listFiles(imageFilter);
+
+                // Add images to route
+                for (int ri = 0; ri < imageFiles.length; ri++) {
+
+                    final float azimuth = -1.0f;
+                    final float pitch = -1.0f;
+                    final float roll = -1.0f;
+
+                    Uri imageUri = Uri.fromFile(imageFiles[ri]);
+
+                    route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
+
+                }
+                // Add route to list
+                routes.put(route.getName(), route);
+            }
+
+        }
 
     }
 
