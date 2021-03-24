@@ -6,15 +6,22 @@ import androidx.core.content.FileProvider;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -26,8 +33,11 @@ import org.json.JSONObject;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,10 +45,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static org.opencv.core.CvType.CV_8UC1;
+
 /**
  * This activity will handle the following route ability for the user.
  */
-public class RecordRouteActivity extends AppCompatActivity {
+public class RecordRouteActivity extends AppCompatActivity implements SensorEventListener {
 
     TextView viewCount;
     Uri fileUri;
@@ -47,7 +59,12 @@ public class RecordRouteActivity extends AppCompatActivity {
     String routeName;
     EditText routeNameInput;
     ArrayList<Uri> uriList = new ArrayList<Uri>();
-    public static Bundle route_bundle = new Bundle();
+    ImageView testView;
+
+    private SensorManager mSensorManager;
+    Sensor accelerometer, magnetometer;
+    float azimuth, pitch, roll;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +77,12 @@ public class RecordRouteActivity extends AppCompatActivity {
 
         routeNameInput = findViewById(R.id.routeName);
         viewCount = findViewById(R.id.viewCount);
+//        testView = (ImageView) findViewById(R.id.testView);
         route = new Route();
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         recordRoute.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +114,6 @@ public class RecordRouteActivity extends AppCompatActivity {
                 .create();
         String json = gson.toJson(route);
         System.out.println(json);
-//        route_bundle.putSerializable("route_json", json);
 
         JSONObject obj = new JSONObject(json);
         // Get route name
@@ -112,16 +133,11 @@ public class RecordRouteActivity extends AppCompatActivity {
 
             Uri imageUri = Uri.parse(snapObj.getString("preprocessed_img_uri"));
             uriList.add(imageUri);
-//            System.out.println(azimuth);
-//            System.out.println(pitch);
-//            System.out.println(roll);
-            System.out.println(imageUri);
             //route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
         }
-        System.out.println(uriList);
 
         Intent intent = new Intent(this, MenuActivity.class);
-//        intent.putExtra("route_json", json);
+        intent.putExtra("route_json", json);
         intent.putExtra("uriList", uriList);
         startActivity(intent);
     }
@@ -200,15 +216,53 @@ public class RecordRouteActivity extends AppCompatActivity {
                         Log.e("mat ", String.valueOf(mat.width()));
                         Log.e("mat ", String.valueOf(mat.height()));
 
-                        //TODO: pass in the actual a,p,r values of the snapshots taken
-                        double azimuth = -1;
-                        double pitch = -1;
-                        double roll = -1;
-
                         // Update the stored view count here.
                         route.addNewSnapshot(fileUri, azimuth, pitch, roll);
                         viewCount.setText(route.getSnapshots().size() + " images stored");
                 }
         }
+    }
+
+    float[] mGravity;
+    float[] mGeomagnetic;
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+            mGravity = event.values;
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+            mGeomagnetic = event.values;
+        if (mGravity != null && mGeomagnetic != null) {
+            float R[] = new float[9];
+            float I[] = new float[9];
+            boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+            if (success) {
+                float orientation[] = new float[3];
+                SensorManager.getOrientation(R, orientation);
+                azimuth = orientation[0]; // orientation contains: azimut, pitch and roll
+                pitch = orientation[1];
+                roll = orientation[2];
+                //System.out.println("azimut: " + azimut +  " " + "pitch: " + pitch + " " + "roll: "+ roll);
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Check if OpenCV has loaded properly
+        mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSensorManager.unregisterListener(this);
     }
 }

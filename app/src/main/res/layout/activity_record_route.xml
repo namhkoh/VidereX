@@ -51,14 +51,14 @@
         opencv:layout_constraintTop_toBottomOf="@+id/viewCount"
         tools:ignore="LabelFor" />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/testView"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginBottom="16dp"-->
-<!--        opencv:layout_constraintBottom_toBottomOf="parent"-->
-<!--        opencv:layout_constraintStart_toStartOf="parent"-->
-<!--        tools:srcCompat="@tools:sample/avatars" />-->
+    <ImageView
+        android:id="@+id/testView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        opencv:layout_constraintBottom_toBottomOf="parent"
+        opencv:layout_constraintStart_toStartOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
