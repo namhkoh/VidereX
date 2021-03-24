@@ -26,6 +26,8 @@
         <item>test route 2</item>
         <item>test route 3</item>
     </string-array>
+    // Show routes activity
+    <string name="changeImageButton">Change</string>
 
 
 </resources>

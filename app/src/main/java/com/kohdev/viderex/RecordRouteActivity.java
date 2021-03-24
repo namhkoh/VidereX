@@ -133,7 +133,7 @@ public class RecordRouteActivity extends AppCompatActivity implements SensorEven
 
             Uri imageUri = Uri.parse(snapObj.getString("preprocessed_img_uri"));
             uriList.add(imageUri);
-            //route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
+            route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
         }
 
         Intent intent = new Intent(this, MenuActivity.class);

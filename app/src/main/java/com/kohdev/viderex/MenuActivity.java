@@ -154,28 +154,21 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
      * Method to route the user to follow route
      */
     private void follow_route() {
-        Intent intent = new Intent(this, FollowRouteActivity.class);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-        intent.putExtra("uriList",uriList);
+
+        Intent intent = new Intent(this, ShowRoutes.class);
+        intent.putExtra("images", uriList);
         startActivity(intent);
+
+//        Intent intent = new Intent(this, FollowRouteActivity.class);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+//        intent.putExtra("uriList",uriList);
+//        startActivity(intent);
 
 //        Intent intent = new Intent(this, SelectRouteActivity.class);
 //        startActivity(intent);
     }
 
-    public void loadSavedData(String json) throws JSONException {
-//        if (json == null) {
-//            JSONObject obj = new JSONObject(json);
-//            String routeName = obj.getString("name");
-//            JSONArray snap = obj.getJSONArray("snapshots");
-//            float azimuth = (float) snap.getDouble(Integer.parseInt("azimuth"));
-//            float pitch = (float) snap.getDouble(Integer.parseInt("pitch"));
-//            float roll = (float) snap.getDouble(Integer.parseInt("roll"));
-//
-//        } else {
-//            Log.e("ERROR", "Json null");
-//        }
-
+    public void loadSavedData() {
 
     }
 
