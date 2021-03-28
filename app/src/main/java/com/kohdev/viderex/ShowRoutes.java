@@ -40,7 +40,7 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
 
     ArrayList<Uri> uriList = new ArrayList<Uri>();
     int counter;
-
+    TextView routeStatus;
     private CameraBridgeViewBase mOpenCvCameraView;
     private Bitmap goalImage;
     private Mat resizedImage;
@@ -75,6 +75,8 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        routeStatus = findViewById(R.id.routeStatus);
 
         frameCount = 0;
         counter = 0;
@@ -210,6 +212,9 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
                 @Override
                 public void run() {
                     diffVal.setText("difference: " + diff);
+                    if (counter == uriList.size()) {
+                        routeStatus.setText("You have arrived.");
+                    }
                 }
             });
             frameCount = 0;
@@ -258,6 +263,8 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
 
     public Double computeAbsDiff(Mat current, Mat goal) {
         int range = 10;
+        // Implementing a repeating pattern..
+        long[] pattern = {100, 100, 100, 100, 100, 100};
         int w = current.width();
         int h = current.height();
         Mat error = Mat.zeros(w, h, CV_8UC1);
@@ -269,13 +276,13 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         Scalar s = Core.sumElems(error);
         if (s.val[0] <= threshold) {
             diffVal.setTextColor(Color.GREEN);
-            v.vibrate(100);
+//            v.vibrate(100);
+            v.vibrate(pattern, -1);
             good_match = true;
         } else {
             diffVal.setTextColor(Color.RED);
             good_match = false;
         }
-
         return s.val[0];
     }
 }

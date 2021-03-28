@@ -28,6 +28,7 @@
     </string-array>
     // Show routes activity
     <string name="changeImageButton">Change</string>
+    <string name="placeholder"> </string>
 
 
 </resources>

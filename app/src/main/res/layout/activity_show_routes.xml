@@ -69,7 +69,17 @@
         opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
         opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
 
-<!--    <Button-->
+    <TextView
+        android:id="@+id/routeStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="336dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/placeholder"
+        opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
+        opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
+
+    <!--    <Button-->
 <!--        android:id="@+id/changeImage"-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->
