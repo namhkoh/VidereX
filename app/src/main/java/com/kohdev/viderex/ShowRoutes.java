@@ -1,5 +1,6 @@
 package com.kohdev.viderex;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
@@ -33,6 +36,8 @@ import org.opencv.imgproc.Imgproc;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static org.opencv.core.CvType.CV_8UC1;
 
@@ -59,6 +64,7 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
     int frameCount;
     boolean good_match = false;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,10 +82,10 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
 //        routeViews = (ImageView) findViewById(R.id.routeImages);
 
         uriList = (ArrayList<Uri>) getIntent().getSerializableExtra("images");
-        for (int i = 0; i < uriList.size(); i++) {
-//            Log.e("imgs", String.valueOf(uriList.get(i)));
-            System.out.println(uriList.get(i));
-        }
+        Collections.sort(uriList);
+//        for (int i = 0; i < uriList.size(); i++) {
+//            System.out.println(uriList.get(i));
+//        }
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -90,14 +96,17 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         // Get instance of Vibrator from current Context
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
+        Log.e("OnCreate - Counter ", String.valueOf(counter));
 
 
+        // the counter does not update
         try {
-            // the counter does not update
+            Log.e("TAG", "entered try");
             goalImage = uriToBitmap(uriList.get(counter));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        goalImageView.setImageBitmap(goalImage);
         Mat goalTmp = bitmapToMat(goalImage);
         resizedImage = new Mat();
         resizedImage = prepare_data(goalTmp, 100, 50);
@@ -120,13 +129,30 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
     }
 
     private Mat changeGoal(ArrayList<Uri> uriList) throws IOException {
-        System.out.println("COUNTER: " + counter);
-        Log.e("CHANGE", "HAPPENED");
+        Log.e("changeGoal - Counter ", String.valueOf(counter));
         goalImageView.setImageBitmap(uriToBitmap(uriList.get(counter)));
         Mat goalTmp = bitmapToMat(goalImage);
         resizedImage = new Mat();
         resizedImage = prepare_data(goalTmp, 100, 50);
         counter++;
+        return resizedImage;
+    }
+
+    public Mat update(int counter, double diff, ArrayList<Uri> uriList) throws IOException {
+        if (diff <= threshold) {
+            try {
+                good_match = true;
+                counter++;
+                goalImageView.setImageBitmap(uriToBitmap(uriList.get(counter)));
+                Mat goalTmp = bitmapToMat(goalImage);
+                resizedImage = new Mat();
+                resizedImage = prepare_data(goalTmp, 100, 50);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println(e);
+            }
+        } else {
+            good_match = false;
+        }
         return resizedImage;
     }
 
@@ -216,9 +242,13 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         //gray for gray scale
         Mat frame = inputFrame.rgba();
         Mat resizedFrame = prepare_data(frame, 100, 50);
-
         if (frameCount == 5) {
             final double diff = computeAbsDiff(resizedImage, resizedFrame);
+            try {
+                update(counter, diff, uriList);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Log.e("diff ", String.valueOf(diff));
             runOnUiThread(new Runnable() {
                 @Override
@@ -230,8 +260,6 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         } else {
             frameCount++;
         }
-        Log.e("frame width", String.valueOf(resizedFrame.width()));
-        Log.e("frame height", String.valueOf(resizedFrame.height()));
         return frame;
     }
 

@@ -117,6 +117,7 @@ public class RecordRouteActivity extends AppCompatActivity implements SensorEven
 
         JSONObject obj = new JSONObject(json);
         // Get route name
+        
         Route route = new Route();
         route.setName(obj.getString("name"));
 
