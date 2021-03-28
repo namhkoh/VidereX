@@ -11,18 +11,14 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
@@ -37,32 +33,27 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 import static org.opencv.core.CvType.CV_8UC1;
 
 public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener {
 
     ArrayList<Uri> uriList = new ArrayList<Uri>();
-    Button change;
-    ImageView routeViews;
     int counter;
 
     private CameraBridgeViewBase mOpenCvCameraView;
     private Bitmap goalImage;
     private Mat resizedImage;
-    private ImageView differenceImageView;
     private ImageView goalImageView;
     private SensorManager mSensorManager;
     private TextView diffVal;
-    private TextView matchQuality;
     int threshold = 7000;
     Sensor accelerometer, magnetometer;
     Vibrator v;
     float azimuth, pitch, roll;
     TextView azimuthTv, pitchTv, rollTv;
     int frameCount;
-    boolean good_match = false;
+    boolean good_match;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -78,14 +69,8 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         rollTv = findViewById(R.id.roll);
         goalImageView = (ImageView) findViewById(R.id.goalView);
 
-        change = (Button) findViewById(R.id.changeImage);
-//        routeViews = (ImageView) findViewById(R.id.routeImages);
-
         uriList = (ArrayList<Uri>) getIntent().getSerializableExtra("images");
         Collections.sort(uriList);
-//        for (int i = 0; i < uriList.size(); i++) {
-//            System.out.println(uriList.get(i));
-//        }
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -99,61 +84,32 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         Log.e("OnCreate - Counter ", String.valueOf(counter));
 
 
-        // the counter does not update
+//        // the counter does not update
         try {
-            Log.e("TAG", "entered try");
             goalImage = uriToBitmap(uriList.get(counter));
+            goalImageView.setImageBitmap(goalImage);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        goalImageView.setImageBitmap(goalImage);
         Mat goalTmp = bitmapToMat(goalImage);
         resizedImage = new Mat();
         resizedImage = prepare_data(goalTmp, 100, 50);
-
-        change.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    goalImage = uriToBitmap(uriList.get(counter));
-                    Mat goalTmp = bitmapToMat(goalImage);
-                    resizedImage = new Mat();
-                    resizedImage = changeGoal(uriList);
-                    resizedImage = prepare_data(goalTmp, 100, 50);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
     }
 
-    private Mat changeGoal(ArrayList<Uri> uriList) throws IOException {
-        Log.e("changeGoal - Counter ", String.valueOf(counter));
-        goalImageView.setImageBitmap(uriToBitmap(uriList.get(counter)));
-        Mat goalTmp = bitmapToMat(goalImage);
-        resizedImage = new Mat();
-        resizedImage = prepare_data(goalTmp, 100, 50);
-        counter++;
-        return resizedImage;
-    }
-
-    public Mat update(int counter, double diff, ArrayList<Uri> uriList) throws IOException {
-        if (diff <= threshold) {
-            try {
-                good_match = true;
+    public void updateGoal(ArrayList<Uri> imageList) throws IOException {
+        try {
+            if (good_match) {
                 counter++;
-                goalImageView.setImageBitmap(uriToBitmap(uriList.get(counter)));
+                goalImage = uriToBitmap(imageList.get(counter));
+                goalImageView.setImageBitmap(goalImage);
                 Mat goalTmp = bitmapToMat(goalImage);
                 resizedImage = new Mat();
                 resizedImage = prepare_data(goalTmp, 100, 50);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                System.out.println(e);
             }
-        } else {
-            good_match = false;
+        } catch (IndexOutOfBoundsException e) {
+            Log.e("ERROR", String.valueOf(e));
         }
-        return resizedImage;
+
     }
 
     private Bitmap uriToBitmap(Uri selectedFileUri) throws IOException {
@@ -245,7 +201,7 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         if (frameCount == 5) {
             final double diff = computeAbsDiff(resizedImage, resizedFrame);
             try {
-                update(counter, diff, uriList);
+                updateGoal(uriList);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -307,24 +263,14 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         Mat error = Mat.zeros(w, h, CV_8UC1);
         Mat current_norm = new Mat();
         Mat goal_norm = new Mat();
-        //Normalize input
-//        current.convertTo(current_norm, CV_32F, 1.0 / 255, 0);
-//        goal.convertTo(goal_norm, CV_32F, 1.0 / 255, 0);
         Core.normalize(current, current_norm, 255, Core.NORM_L2);
         Core.normalize(goal, goal_norm, 255, Core.NORM_L2);
         Core.absdiff(current_norm, goal_norm, error);
         Scalar s = Core.sumElems(error);
-        System.out.println(s);
-//        if (s.val[0] <= 7000) {
-//            if (Math.abs(incoming_azimuth - azimuth) <= range && Math.abs(incoming_pitch - pitch) <= range && Math.abs(incoming_roll - roll) <= range) {
-//                v.vibrate(100);
-//            }
-//        }
-        //TODO: logic to set the threshold dynamically
         if (s.val[0] <= threshold) {
             diffVal.setTextColor(Color.GREEN);
-            good_match = true;
             v.vibrate(100);
+            good_match = true;
         } else {
             diffVal.setTextColor(Color.RED);
             good_match = false;

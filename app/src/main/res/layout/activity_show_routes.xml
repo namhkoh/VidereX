@@ -69,13 +69,13 @@
         opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
         opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
 
-    <Button
-        android:id="@+id/changeImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="322dp"
-        android:layout_marginBottom="40dp"
-        android:text="@string/changeImageButton"
-        opencv:layout_constraintBottom_toBottomOf="@id/OpenCVCamera"
-        opencv:layout_constraintRight_toRightOf="@id/OpenCVCamera" />
+<!--    <Button-->
+<!--        android:id="@+id/changeImage"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginEnd="322dp"-->
+<!--        android:layout_marginBottom="40dp"-->
+<!--        android:text="@string/changeImageButton"-->
+<!--        opencv:layout_constraintBottom_toBottomOf="@id/OpenCVCamera"-->
+<!--        opencv:layout_constraintRight_toRightOf="@id/OpenCVCamera" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>
