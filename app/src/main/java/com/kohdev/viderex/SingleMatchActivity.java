@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.os.Build;
 import android.os.Vibrator;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.opencv.android.CameraBridgeViewBase;
@@ -44,7 +46,6 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     private ImageView differenceImageView;
     private SensorManager mSensorManager;
     private TextView diffVal;
-    private TextView matchQuality;
     int threshold = 7000;
     Sensor accelerometer, magnetometer;
     Vibrator v;
@@ -52,6 +53,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     float incoming_azimuth, incoming_pitch, incoming_roll;
     TextView azimuthTv, pitchTv, rollTv;
     int frameCount;
+    Bitmap errorBit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +67,8 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         mOpenCvCameraView = findViewById(R.id.OpenCVCamera);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-//        differenceImageView = findViewById(R.id.differenceView);
+        differenceImageView = findViewById(R.id.differenceView);
         diffVal = findViewById(R.id.differenceValue);
-        matchQuality = findViewById(R.id.matchQuality);
 
         azimuthTv = findViewById(R.id.azimut);
         pitchTv = findViewById(R.id.pitch);
@@ -95,8 +96,6 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         Mat goalTmp = bitmapToMat(goalImage);
         resizedImage = new Mat();
         resizedImage = prepare_data(goalTmp, 100, 50);
-
-
     }
 
     /**
@@ -289,14 +288,29 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         int w = current.width();
         int h = current.height();
         Mat error = Mat.zeros(w, h, CV_8UC1);
+        Mat error_image = Mat.zeros(w, h, CV_8UC1);
         Mat current_norm = new Mat();
         Mat goal_norm = new Mat();
-        //Normalize input
-//        current.convertTo(current_norm, CV_32F, 1.0 / 255, 0);
-//        goal.convertTo(goal_norm, CV_32F, 1.0 / 255, 0);
+
         Core.normalize(current, current_norm, 255, Core.NORM_L2);
         Core.normalize(goal, goal_norm, 255, Core.NORM_L2);
         Core.absdiff(current_norm, goal_norm, error);
+
+        Core.absdiff(current, goal, error_image);
+
+        //Convert error to bitmap
+        if (frameCount == 5) {
+            errorBit = matToBitmap(error_image);
+            System.out.println(errorBit.getHeight());
+            System.out.println(errorBit.getWidth());
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    differenceImageView.setImageBitmap(errorBit);
+                }
+            });
+        }
+
         Scalar s = Core.sumElems(error);
         System.out.println(s);
 //        if (s.val[0] <= 7000) {
@@ -338,6 +352,27 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         ImageView goalImageView = findViewById(R.id.goalView);
         goalImageView.setImageBitmap(goalImage);
         return goalImage;
+    }
+
+    private Bitmap matToBitmap(Mat orig_image) {
+
+        // Clone image! Important otherwise colour conversion is applied to original...
+        Mat mat_image = orig_image.clone();
+
+        int w = mat_image.width();
+        int h = mat_image.height();
+        int type = mat_image.type();
+
+        // Convert image to bitmap
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+        final Bitmap ciBmp = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
+
+        if (type == CV_8UC1) {
+            Imgproc.cvtColor(mat_image, mat_image, Imgproc.COLOR_GRAY2RGBA);
+        }
+        Utils.matToBitmap(mat_image, ciBmp);
+
+        return ciBmp;
     }
 
 }

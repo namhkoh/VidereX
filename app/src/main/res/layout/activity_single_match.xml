@@ -15,28 +15,6 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp" />
 
-    <ImageView
-        android:id="@+id/goalView"
-        android:layout_width="131dp"
-        android:layout_height="128dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:contentDescription="@string/goalImageView"
-        opencv:layout_constraintBottom_toBottomOf="@id/OpenCVCamera"
-        opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <!--    <ImageView-->
-    <!--        android:id="@+id/differenceView"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginStart="176dp"-->
-    <!--        android:layout_marginBottom="16dp"-->
-    <!--        android:contentDescription="@string/differenceImageView"-->
-    <!--        opencv:layout_constraintBottom_toBottomOf="@id/OpenCVCamera"-->
-    <!--        opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"-->
-    <!--        tools:srcCompat="@tools:sample/avatars" />-->
-
     <TextView
         android:id="@+id/differenceValue"
         android:layout_width="wrap_content"
@@ -80,22 +58,27 @@
         opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
         opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
 
-    <TextView
-        android:id="@+id/matchQuality"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="320dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/matchQuality"
+    <ImageView
+        android:id="@+id/goalView"
+        android:layout_width="131dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/goalImageView"
+        opencv:layout_constraintBottom_toBottomOf="@id/OpenCVCamera"
         opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
-        opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
+        tools:srcCompat="@tools:sample/avatars" />
 
-    <!--    <ImageView-->
-    <!--        android:id="@+id/testView"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        tools:layout_editor_absoluteX="0dp"-->
-    <!--        tools:layout_editor_absoluteY="0dp"-->
-    <!--        tools:srcCompat="@tools:sample/cities" />-->
+    <ImageView
+        android:id="@+id/differenceView"
+        android:layout_width="120dp"
+        android:layout_height="97dp"
+        android:layout_marginLeft="200dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/differenceImageView"
+        opencv:layout_constraintBottom_toBottomOf="@id/OpenCVCamera"
+        opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
+        tools:srcCompat="@tools:sample/avatars" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
