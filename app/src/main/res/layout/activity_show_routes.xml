@@ -79,13 +79,15 @@
         opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
         opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
 
-    <!--    <Button-->
-<!--        android:id="@+id/changeImage"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginEnd="322dp"-->
-<!--        android:layout_marginBottom="40dp"-->
-<!--        android:text="@string/changeImageButton"-->
-<!--        opencv:layout_constraintBottom_toBottomOf="@id/OpenCVCamera"-->
-<!--        opencv:layout_constraintRight_toRightOf="@id/OpenCVCamera" />-->
+    <ImageView
+        android:id="@+id/differenceView"
+        android:layout_width="120dp"
+        android:layout_height="97dp"
+        android:layout_marginLeft="200dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/differenceImageView"
+        opencv:layout_constraintBottom_toBottomOf="@id/OpenCVCamera"
+        opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
+        tools:srcCompat="@tools:sample/avatars" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

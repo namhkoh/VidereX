@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
     ArrayList<Uri> uriList = new ArrayList<Uri>();
     int counter;
     TextView routeStatus;
+    private ImageView differenceImageView;
     private CameraBridgeViewBase mOpenCvCameraView;
     private Bitmap goalImage;
     private Mat resizedImage;
@@ -54,6 +56,8 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
     TextView azimuthTv, pitchTv, rollTv;
     int frameCount;
     boolean good_match;
+    Bitmap errorBit;
+    private TextToSpeech textToSpeech;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -77,6 +81,7 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         routeStatus = findViewById(R.id.routeStatus);
+        differenceImageView = findViewById(R.id.differenceView);
 
         frameCount = 0;
         counter = 0;
@@ -96,6 +101,13 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         Mat goalTmp = bitmapToMat(goalImage);
         resizedImage = new Mat();
         resizedImage = prepare_data(goalTmp, 100, 50);
+
+        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+
+            }
+        });
     }
 
     public void updateGoal(ArrayList<Uri> imageList) throws IOException {
@@ -209,11 +221,13 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
             }
             Log.e("diff ", String.valueOf(diff));
             runOnUiThread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void run() {
                     diffVal.setText("difference: " + diff);
                     if (counter == uriList.size()) {
                         routeStatus.setText("You have arrived.");
+                        initTTS("You have arrived");
                     }
                 }
             });
@@ -268,11 +282,28 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         int w = current.width();
         int h = current.height();
         Mat error = Mat.zeros(w, h, CV_8UC1);
+        Mat error_image = Mat.zeros(w, h, CV_8UC1);
         Mat current_norm = new Mat();
         Mat goal_norm = new Mat();
         Core.normalize(current, current_norm, 255, Core.NORM_L2);
         Core.normalize(goal, goal_norm, 255, Core.NORM_L2);
         Core.absdiff(current_norm, goal_norm, error);
+
+        Core.absdiff(current, goal, error_image);
+
+        //Convert error to bitmap
+        if (frameCount == 5) {
+            errorBit = matToBitmap(error_image);
+            System.out.println(errorBit.getHeight());
+            System.out.println(errorBit.getWidth());
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    differenceImageView.setImageBitmap(errorBit);
+                }
+            });
+        }
+
         Scalar s = Core.sumElems(error);
         if (s.val[0] <= threshold) {
             diffVal.setTextColor(Color.GREEN);
@@ -284,5 +315,40 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
             good_match = false;
         }
         return s.val[0];
+    }
+
+    /**
+     * A voice reads the text given in the method.
+     *
+     * @param selectedText The String text that is read.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void initTTS(String selectedText) {
+        int speechStatus = textToSpeech.speak(selectedText, TextToSpeech.QUEUE_ADD, null, "1");
+        textToSpeech.setSpeechRate((float) 1.5);
+        if (speechStatus == TextToSpeech.ERROR) {
+            Log.e("TTS", "Error in converting Text to Speech!");
+        }
+    }
+
+    private Bitmap matToBitmap(Mat orig_image) {
+
+        // Clone image! Important otherwise colour conversion is applied to original...
+        Mat mat_image = orig_image.clone();
+
+        int w = mat_image.width();
+        int h = mat_image.height();
+        int type = mat_image.type();
+
+        // Convert image to bitmap
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+        final Bitmap ciBmp = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
+
+        if (type == CV_8UC1) {
+            Imgproc.cvtColor(mat_image, mat_image, Imgproc.COLOR_GRAY2RGBA);
+        }
+        Utils.matToBitmap(mat_image, ciBmp);
+
+        return ciBmp;
     }
 }
