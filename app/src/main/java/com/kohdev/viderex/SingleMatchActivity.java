@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Vibrator;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -55,6 +56,8 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     int frameCount;
     Bitmap errorBit;
 
+    private TextToSpeech textToSpeech;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -96,7 +99,15 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         Mat goalTmp = bitmapToMat(goalImage);
         resizedImage = new Mat();
         resizedImage = prepare_data(goalTmp, 100, 50);
+
+        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+
+            }
+        });
     }
+
 
     /**
      * This method will prepare the data to be used for the absolute diffferencing function
@@ -199,6 +210,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         return bmp;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         //gray for gray scale
@@ -283,6 +295,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
      * @param goal    - Goal view
      * @return Difference value
      */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public Double computeAbsDiff(Mat current, Mat goal) {
         int range = 10;
         int w = current.width();
@@ -321,6 +334,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         //TODO: logic to set the threshold dynamically
         if (s.val[0] <= threshold) {
             diffVal.setTextColor(Color.GREEN);
+            //initTTS("Good");
             v.vibrate(100);
         } else {
             diffVal.setTextColor(Color.RED);
@@ -373,6 +387,20 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         Utils.matToBitmap(mat_image, ciBmp);
 
         return ciBmp;
+    }
+
+    /**
+     * A voice reads the text given in the method.
+     *
+     * @param selectedText The String text that is read.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void initTTS(String selectedText) {
+        int speechStatus = textToSpeech.speak(selectedText, TextToSpeech.QUEUE_FLUSH, null, "1");
+        textToSpeech.setSpeechRate((float) 1.5);
+        if (speechStatus == TextToSpeech.ERROR) {
+            Log.e("TTS", "Error in converting Text to Speech!");
+        }
     }
 
 }
