@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.VideoView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -139,7 +140,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
      * This method will launch the single match method.
      */
     private void launchSingleMatch() {
-        dispatchTakePictureIntent();
+//        dispatchTakePictureIntent();
+        Intent intent = new Intent(this, VideoRecordRoute.class);
+        startActivity(intent);
     }
 
     /**
@@ -164,8 +167,8 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
 //        intent.putExtra("uriList",uriList);
 //        startActivity(intent);
 
-//        Intent intent = new Intent(this, SelectRouteActivity.class);
-//        startActivity(intent);
+    //        Intent intent = new Intent(this, SelectRouteActivity.class);
+    //        startActivity(intent);
     }
 
     public void loadSavedData() {
@@ -208,7 +211,6 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -235,7 +237,6 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         Log.e("current photo", currentPhotoPath);
         return image;
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {

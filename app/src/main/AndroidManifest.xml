@@ -10,7 +10,7 @@
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" />
+        android:required="true" />
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
@@ -29,18 +29,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".VideoRecordRoute">
+        <activity
+            android:name=".VideoRecordRoute"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <!--                <category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
         </activity>
         <activity android:name=".ShowRoutes">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <!--                <category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
         </activity>
         <activity android:name=".SelectRouteActivity" />
@@ -59,14 +61,16 @@
             android:name=".SingleMatchActivity"
             android:screenOrientation="landscape">
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+                <!--                <category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
         </activity>
         <activity
             android:name=".CaptureView"
             android:screenOrientation="landscape">
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+                <!--                <category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
         </activity>
         <activity android:name=".FollowRouteActivity" />
@@ -83,7 +87,8 @@
             android:name=".RecordRouteActivity"
             android:screenOrientation="landscape">
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+                <!--                <category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
         </activity>
     </application>
