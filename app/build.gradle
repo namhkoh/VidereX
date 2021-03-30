@@ -25,6 +25,19 @@ android {
             path file('../../../Github/VidereX/OpenCV-android-sdk/sdk/native/jni/OpenCV-arm64-v8a.mk')
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/native-image/macosx-x86_64/jnijavacpp/reflect-config.json'
+        exclude 'META-INF/native-image/macosx-x86_64/jnijavacpp/jni-config.json'
+        exclude 'META-INF/native-image/android-arm/jnijavacpp/jni-config.json'
+        exclude 'META-INF/native-image/android-arm/jnijavacpp/reflect-config.json'
+        exclude 'META-INF/native-image/android-arm64/jnijavacpp/jni-config.json'
+        exclude 'META-INF/native-image/android-arm64/jnijavacpp/reflect-config.json'
+        exclude 'META-INF/native-image/android-x86/jnijavacpp/jni-config.json'
+        exclude 'META-INF/native-image/android-x86/jnijavacpp/reflect-config.json'
+        exclude 'META-INF/native-image/ios-x86_64/jnijavacpp/reflect-config.json'
+        exclude 'META-INF/native-image/linux-x86_64/jnijavacpp/jni-config.json'
+    }
 }
 
 dependencies {
@@ -38,6 +51,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.google.code.gson:gson:2.8.6'
-
-
+//    implementation group: 'org.bytedeco', name: 'javacv-platform', version: '1.5.5'
 }
