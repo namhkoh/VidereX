@@ -14,10 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.VideoView;
 
-//import org.bytedeco.javacv.AndroidFrameConverter;
-//import org.bytedeco.javacv.FFmpegFrameGrabber;
-//import org.bytedeco.javacv.Frame;
-//import org.bytedeco.javacv.OpenCVFrameConverter;
+
+import org.bytedeco.javacv.AndroidFrameConverter;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -54,13 +55,13 @@ public class VideoRecordRoute extends AppCompatActivity {
         getFrames.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                try {
-//                    extractImageFrame(videoUri);
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (FFmpegFrameGrabber.Exception e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    extractImageFrame(videoUri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (FFmpegFrameGrabber.Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -134,8 +135,11 @@ public class VideoRecordRoute extends AppCompatActivity {
         }
     }
 
-//    private void extractImageFrame(Uri uriPath) throws FileNotFoundException, FFmpegFrameGrabber.Exception {
-//        InputStream inputStream = new FileInputStream(String.valueOf(uriPath));
+    private void extractImageFrame(Uri uriPath) throws FileNotFoundException, FFmpegFrameGrabber.Exception {
+        InputStream inputStream = getContentResolver().openInputStream(uriPath);
+        System.out.println(inputStream);
+
+
 //        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(inputStream);
 //        AndroidFrameConverter convertToBitmap = new AndroidFrameConverter();
 //        OpenCVFrameConverter.ToMat converterToMat = new OpenCVFrameConverter.ToMat();
@@ -151,8 +155,8 @@ public class VideoRecordRoute extends AppCompatActivity {
 ////            img = preprocessImage(mat);
 ////            saveImageToInternalStorage(bitmap,img,framecount,dir)
 //        }
-//
-//    }
+
+    }
 
 
 }
