@@ -15,22 +15,26 @@ import android.widget.Button;
 import android.widget.VideoView;
 
 
-import org.bytedeco.javacv.AndroidFrameConverter;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.OpenCVFrameConverter;
+//import org.bytedeco.javacv.AndroidFrameConverter;
+//import org.bytedeco.javacv.FFmpegFrameGrabber;
+//import org.bytedeco.javacv.Frame;
+//import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import wseemann.media.FFmpegMediaMetadataRetriever;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
@@ -56,10 +60,8 @@ public class VideoRecordRoute extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    extractImageFrame(videoUri);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (FFmpegFrameGrabber.Exception e) {
+                    extractImageFrame(absPath);
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -130,32 +132,70 @@ public class VideoRecordRoute extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 videoView.setVideoURI(videoUri);
+                Log.e("videoUri", String.valueOf(videoUri.getPath()));
                 videoView.setZOrderOnTop(true);//this line solve the problem
                 videoView.start();
         }
     }
 
-    private void extractImageFrame(Uri uriPath) throws FileNotFoundException, FFmpegFrameGrabber.Exception {
-        InputStream inputStream = getContentResolver().openInputStream(uriPath);
-        System.out.println(inputStream);
+    private void extractImageFrame(String absPath) throws IOException {
 
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+        String parentPath = "/storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/";
+        String testPath = "/storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Videos/VID_20210402_133213_2599549758740143761.mp4";
+        String path = "content://com.kohdev.viderex/my_movies/Videos/VID_20210402_133213_2599549758740143761.mp4";
 
-//        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(inputStream);
-//        AndroidFrameConverter convertToBitmap = new AndroidFrameConverter();
-//        OpenCVFrameConverter.ToMat converterToMat = new OpenCVFrameConverter.ToMat();
-//
-//        grabber.start();
-//        Mat img = new Mat();
-//
-//        for (int frameCount = 0; frameCount < grabber.getLengthInVideoFrames(); frameCount++) {
-//            Frame nthFrame = grabber.grabImage();
-//            Bitmap bitmap = convertToBitmap.convert(nthFrame);
-//            Mat mat = converterToMat.convertToOrgOpenCvCoreMat(nthFrame);
-//            System.out.println(bitmap.getWidth());
-////            img = preprocessImage(mat);
-////            saveImageToInternalStorage(bitmap,img,framecount,dir)
-//        }
+        FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
+        med.setDataSource(absPath);
+        String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
+        int videoDuration = Integer.parseInt(time);
+        Log.e("video duration", String.valueOf(videoDuration));
 
+        for (int i = 0; i < videoDuration; i++) {
+            try {
+                Bitmap bmp = med.getFrameAtTime(i * 1000000, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
+                Log.d("MyApp", "Param of getFrameAtTime" + (1000000 * i));
+                saveBit(bmp);
+            } catch (NullPointerException e) {
+                Log.e("ERROR", String.valueOf(e));
+            }
+//            finally {
+//                med.release();
+//            }
+        }
+
+    }
+
+    private File saveBit(Bitmap bmp) throws IOException {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 60, bytes);
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String frameName = "FRAME_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+
+        // Create the storage directory if it does not exist
+        if (!storageDir.exists() && !storageDir.mkdirs()) {
+            Log.d("APP_TAG", "failed to create directory");
+        }
+
+        // Create the storage directory if it does not exist
+        Log.e("Storage dir", String.valueOf(storageDir));
+        File newStorageDir = new File(storageDir + "/Frames/");
+        newStorageDir.mkdir();
+        File image = File.createTempFile(
+                frameName,  /* prefix */
+                ".jpg",         /* suffix */
+                newStorageDir     /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        absPath = image.getAbsolutePath();
+        Log.e("current video", absPath);
+        FileOutputStream fo = new FileOutputStream(image);
+        fo.write(bytes.toByteArray());
+        fo.close();
+        return image;
     }
 
 
