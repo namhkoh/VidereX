@@ -140,7 +140,7 @@ public class VideoRecordRoute extends AppCompatActivity {
 
     private void extractImageFrame(String absPath) throws IOException {
 
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+        File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
         String parentPath = "/storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/";
         String testPath = "/storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Videos/VID_20210402_133213_2599549758740143761.mp4";
         String path = "content://com.kohdev.viderex/my_movies/Videos/VID_20210402_133213_2599549758740143761.mp4";
