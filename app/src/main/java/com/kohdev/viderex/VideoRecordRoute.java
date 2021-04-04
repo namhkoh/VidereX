@@ -1,11 +1,13 @@
 package com.kohdev.viderex;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -31,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -57,6 +60,7 @@ public class VideoRecordRoute extends AppCompatActivity {
         Button getFrames = findViewById(R.id.extractFramesButton);
 
         getFrames.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 try {
@@ -138,6 +142,7 @@ public class VideoRecordRoute extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void extractImageFrame(String absPath) throws IOException {
 
         File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
@@ -150,28 +155,23 @@ public class VideoRecordRoute extends AppCompatActivity {
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoDuration = Integer.parseInt(time);
         Log.e("video duration", String.valueOf(videoDuration));
-
-        for (int i = 0; i < videoDuration; i++) {
-            try {
-                Bitmap bmp = med.getFrameAtTime(i * 1000000, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
-                Log.d("MyApp", "Param of getFrameAtTime" + (1000000 * i));
-                saveBit(bmp);
-            } catch (NullPointerException e) {
-                Log.e("ERROR", String.valueOf(e));
-            }
-//            finally {
-//                med.release();
-//            }
+        // The frames could be starting +1 the start. Investigate the main looper. 
+        for (int i = 1000000; i < videoDuration * 1000; i += 1000000) {
+            Bitmap bmp = med.getFrameAtTime(i, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
+            Log.d("Frame extracted at ", String.valueOf(i));
+            saveBit(bmp);
         }
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private File saveBit(Bitmap bmp) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.JPEG, 60, bytes);
 
+        String currentTimestamp = String.valueOf(Instant.now().toEpochMilli());
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String frameName = "FRAME_" + timeStamp + "_";
+        String frameName = "FRAME_" + currentTimestamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
 
         // Create the storage directory if it does not exist
