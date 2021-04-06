@@ -29,6 +29,8 @@
     // Show routes activity
     <string name="changeImageButton">Change</string>
     <string name="placeholder"> </string>
+    <string name="extractFrames">Extract frames</string>
+    <string name="sendFrames">Send</string>
 
 
 </resources>

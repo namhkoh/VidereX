@@ -16,7 +16,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
-import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,68 +32,57 @@ import org.opencv.imgproc.Imgproc;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import static org.opencv.core.CvType.CV_8UC1;
 
-public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener {
+public class DebugViewActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener {
 
-    ArrayList<Uri> uriList = new ArrayList<Uri>();
-    int counter;
-    TextView routeStatus;
-    private ImageView differenceImageView;
     private CameraBridgeViewBase mOpenCvCameraView;
-    private Bitmap goalImage;
     private Mat resizedImage;
-    private ImageView goalImageView;
     private SensorManager mSensorManager;
+    private Bitmap goalImage;
     private TextView diffVal;
     int threshold = 7000;
+
+    ImageView storedView;
+    ImageView differenceView;
     Sensor accelerometer, magnetometer;
     Vibrator v;
     float azimuth, pitch, roll;
-    TextView azimuthTv, pitchTv, rollTv;
     int frameCount;
-    boolean good_match;
+    int counter;
     Bitmap errorBit;
-    private TextToSpeech textToSpeech;
+    boolean good_match;
+    ArrayList<Uri> framePath;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_routes);
+        setContentView(R.layout.activity_debug_view);
+
         mOpenCvCameraView = findViewById(R.id.OpenCVCamera);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-        diffVal = findViewById(R.id.differenceValue);
-        azimuthTv = findViewById(R.id.azimut);
-        pitchTv = findViewById(R.id.pitch);
-        rollTv = findViewById(R.id.roll);
-        goalImageView = (ImageView) findViewById(R.id.goalView);
-
-        uriList = (ArrayList<Uri>) getIntent().getSerializableExtra("images");
-        Collections.sort(uriList);
+        storedView = (ImageView) findViewById(R.id.StoredView);
+        differenceView = (ImageView) findViewById(R.id.DifferenceView);
+        diffVal = (TextView) findViewById(R.id.differenceValue);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-
-        routeStatus = findViewById(R.id.routeStatus);
-        differenceImageView = findViewById(R.id.differenceView);
 
         frameCount = 0;
         counter = 0;
         // Get instance of Vibrator from current Context
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
-        Log.e("OnCreate - Counter ", String.valueOf(counter));
 
+        framePath = (ArrayList<Uri>) getIntent().getSerializableExtra("image_path");
+        System.out.println(framePath);
 
-//        // the counter does not update
         try {
-            goalImage = uriToBitmap(uriList.get(counter));
-            goalImageView.setImageBitmap(goalImage);
+            goalImage = uriToBitmap(framePath.get(counter));
+            storedView.setImageBitmap(goalImage);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,12 +90,6 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         resizedImage = new Mat();
         resizedImage = prepare_data(goalTmp, 100, 50);
 
-        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-
-            }
-        });
     }
 
     public void updateGoal(ArrayList<Uri> imageList) throws IOException {
@@ -115,7 +97,7 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
             if (good_match) {
                 counter++;
                 goalImage = uriToBitmap(imageList.get(counter));
-                goalImageView.setImageBitmap(goalImage);
+                storedView.setImageBitmap(goalImage);
                 Mat goalTmp = bitmapToMat(goalImage);
                 resizedImage = new Mat();
                 resizedImage = prepare_data(goalTmp, 100, 50);
@@ -152,17 +134,12 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
                 azimuth = orientation[0]; // orientation contains: azimut, pitch and roll
                 pitch = orientation[1];
                 roll = orientation[2];
-                azimuthTv.setText("Azimuth: " + azimuth);
-                pitchTv.setText("Pitch: " + pitch);
-                rollTv.setText("Roll: " + roll);
+//                azimuthTv.setText("Azimuth: " + azimuth);
+//                pitchTv.setText("Pitch: " + pitch);
+//                rollTv.setText("Roll: " + roll);
                 //System.out.println("azimut: " + azimut +  " " + "pitch: " + pitch + " " + "roll: "+ roll);
             }
         }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
     @Override
@@ -197,6 +174,11 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
     }
 
     @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
     public void onCameraViewStarted(int width, int height) {
 
     }
@@ -214,7 +196,7 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
         if (frameCount == 5) {
             final double diff = computeAbsDiff(resizedImage, resizedFrame);
             try {
-                updateGoal(uriList);
+                updateGoal(framePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -224,9 +206,8 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
                 @Override
                 public void run() {
                     diffVal.setText("difference: " + diff);
-                    if (counter == uriList.size()) {
-                        routeStatus.setText("You have arrived.");
-                        initTTS("You have arrived");
+                    if (counter == framePath.size()) {
+                        System.out.println("end of route");
                     }
                 }
             });
@@ -298,7 +279,7 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    differenceImageView.setImageBitmap(errorBit);
+                    differenceView.setImageBitmap(errorBit);
                 }
             });
         }
@@ -314,20 +295,6 @@ public class ShowRoutes extends AppCompatActivity implements CameraBridgeViewBas
             good_match = false;
         }
         return s.val[0];
-    }
-
-    /**
-     * A voice reads the text given in the method.
-     *
-     * @param selectedText The String text that is read.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void initTTS(String selectedText) {
-        int speechStatus = textToSpeech.speak(selectedText, TextToSpeech.QUEUE_ADD, null, "1");
-        textToSpeech.setSpeechRate((float) 1.5);
-        if (speechStatus == TextToSpeech.ERROR) {
-            Log.e("TTS", "Error in converting Text to Speech!");
-        }
     }
 
     private Bitmap matToBitmap(Mat orig_image) {

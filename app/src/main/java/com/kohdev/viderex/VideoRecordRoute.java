@@ -32,6 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class VideoRecordRoute extends AppCompatActivity {
     String absPath;
     Uri videoUri;
     InputStream videoStream;
+    //ArrayList<String> frameListPath = new ArrayList<String>();
+    ArrayList<Uri> frameListPath = new ArrayList<Uri>();
 
     static final int REQUEST_VIDEO_CAPTURE = 1;
     static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 1;
@@ -58,6 +61,7 @@ public class VideoRecordRoute extends AppCompatActivity {
         setContentView(R.layout.activity_video_record_route);
         videoView = (VideoView) findViewById(R.id.routeVideo);
         Button getFrames = findViewById(R.id.extractFramesButton);
+        Button sendFrames = findViewById(R.id.sendFrames);
 
         getFrames.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -68,6 +72,15 @@ public class VideoRecordRoute extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+
+        sendFrames.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), DebugViewActivity.class);
+                intent.putExtra("image_path", frameListPath);
+                startActivity(intent);
             }
         });
 
@@ -191,7 +204,8 @@ public class VideoRecordRoute extends AppCompatActivity {
 
         // Save a file: path for use with ACTION_VIEW intents
         absPath = image.getAbsolutePath();
-        Log.e("current video", absPath);
+        Log.e("current image path", absPath);
+        frameListPath.add(Uri.fromFile(image));
         FileOutputStream fo = new FileOutputStream(image);
         fo.write(bytes.toByteArray());
         fo.close();
