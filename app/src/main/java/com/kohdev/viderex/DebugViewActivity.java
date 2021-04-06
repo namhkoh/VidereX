@@ -20,6 +20,16 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -42,7 +52,10 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
     private SensorManager mSensorManager;
     private Bitmap goalImage;
     private TextView diffVal;
-    int threshold = 7000;
+    private LineChart mChart;
+    private Thread thread;
+    private boolean plotData = true;
+
 
     ImageView storedView;
     ImageView differenceView;
@@ -51,6 +64,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
     float azimuth, pitch, roll;
     int frameCount;
     int counter;
+    int threshold = 7000;
     Bitmap errorBit;
     boolean good_match;
     ArrayList<Uri> framePath;
@@ -66,6 +80,58 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         storedView = (ImageView) findViewById(R.id.StoredView);
         differenceView = (ImageView) findViewById(R.id.DifferenceView);
         diffVal = (TextView) findViewById(R.id.differenceValue);
+        mChart = (LineChart) findViewById(R.id.differenceChart);
+
+        mChart.getDescription().setText("Difference value");
+        // enable description text
+        mChart.getDescription().setEnabled(true);
+        // enable touch gestures
+        mChart.setTouchEnabled(true);
+        // enable scaling and dragging
+        mChart.setDragEnabled(true);
+        mChart.setScaleEnabled(true);
+        mChart.setDrawGridBackground(false);
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        mChart.setPinchZoom(true);
+
+        // set an alternative background color
+        mChart.setBackgroundColor(Color.WHITE);
+
+        LineData data = new LineData();
+        data.setValueTextColor(Color.WHITE);
+
+        // add empty data
+        mChart.setData(data);
+
+        // get the legend (only possible after setting data)
+        Legend l = mChart.getLegend();
+
+        // modify the legend ...
+        l.setForm(Legend.LegendForm.LINE);
+        l.setTextColor(Color.WHITE);
+
+        XAxis xl = mChart.getXAxis();
+        xl.setTextColor(Color.WHITE);
+        xl.setDrawGridLines(true);
+        xl.setAvoidFirstLastClipping(true);
+        xl.setEnabled(true);
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.setTextColor(Color.WHITE);
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setAxisMaximum(15000);
+        leftAxis.setAxisMinimum(0);
+        leftAxis.setDrawGridLines(true);
+
+        YAxis rightAxis = mChart.getAxisRight();
+        rightAxis.setEnabled(false);
+
+        mChart.getAxisLeft().setDrawGridLines(false);
+        mChart.getXAxis().setDrawGridLines(false);
+        mChart.setDrawBorders(false);
+
+        feedMultiple();
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -206,6 +272,10 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
                 @Override
                 public void run() {
                     diffVal.setText("difference: " + diff);
+                    if (plotData) {
+                        addEntry((float) diff);
+                        plotData = false;
+                    }
                     if (counter == framePath.size()) {
                         System.out.println("end of route");
                     }
@@ -316,5 +386,76 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         Utils.matToBitmap(mat_image, ciBmp);
 
         return ciBmp;
+    }
+
+    private void addEntry(Float difference) {
+
+        LineData data = mChart.getData();
+
+        if (data != null) {
+
+            ILineDataSet set = data.getDataSetByIndex(0);
+            // set.addEntry(...); // can be called as well
+
+            if (set == null) {
+                set = createSet();
+                data.addDataSet(set);
+            }
+
+//            data.addEntry(new Entry(set.getEntryCount(), (float) (Math.random() * 80) + 10f), 0);
+            data.addEntry(new Entry(set.getEntryCount(), difference), 0);
+//            data.addEntry(new Entry(set.getEntryCount(), event.values[0] + 5), 0);
+            data.notifyDataChanged();
+
+            // let the chart know it's data has changed
+            mChart.notifyDataSetChanged();
+
+            // limit the number of visible entries
+            mChart.setVisibleXRangeMaximum(150);
+            // mChart.setVisibleYRange(30, AxisDependency.LEFT);
+
+            // move to the latest entry
+            mChart.moveViewToX(data.getEntryCount());
+
+        }
+    }
+
+    private LineDataSet createSet() {
+
+        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setLineWidth(3f);
+        set.setColor(Color.MAGENTA);
+        set.setHighlightEnabled(false);
+        set.setDrawValues(false);
+        set.setDrawCircles(false);
+        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set.setCubicIntensity(0.2f);
+        return set;
+    }
+
+    private void feedMultiple() {
+
+        if (thread != null) {
+            thread.interrupt();
+        }
+
+        thread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                while (true) {
+                    plotData = true;
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        thread.start();
     }
 }
