@@ -59,6 +59,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
 
     ImageView storedView;
     ImageView differenceView;
+    TextView azimuthTv, pitchTv, rollTv;
     Sensor accelerometer, magnetometer;
     Vibrator v;
     float azimuth, pitch, roll;
@@ -81,6 +82,9 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         differenceView = (ImageView) findViewById(R.id.DifferenceView);
         diffVal = (TextView) findViewById(R.id.differenceValue);
         mChart = (LineChart) findViewById(R.id.differenceChart);
+        azimuthTv = findViewById(R.id.azimut);
+        pitchTv = findViewById(R.id.pitch);
+        rollTv = findViewById(R.id.roll);
 
         mChart.getDescription().setText("Difference value");
         // enable description text
@@ -121,7 +125,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         leftAxis.setTextColor(Color.WHITE);
         leftAxis.setDrawGridLines(false);
         leftAxis.setAxisMaximum(15000);
-        leftAxis.setAxisMinimum(0);
+        leftAxis.setAxisMinimum(2000);
         leftAxis.setDrawGridLines(true);
 
         YAxis rightAxis = mChart.getAxisRight();
@@ -200,9 +204,9 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
                 azimuth = orientation[0]; // orientation contains: azimut, pitch and roll
                 pitch = orientation[1];
                 roll = orientation[2];
-//                azimuthTv.setText("Azimuth: " + azimuth);
-//                pitchTv.setText("Pitch: " + pitch);
-//                rollTv.setText("Roll: " + roll);
+                azimuthTv.setText("Azimuth: " + azimuth);
+                pitchTv.setText("Pitch: " + pitch);
+                rollTv.setText("Roll: " + roll);
                 //System.out.println("azimut: " + azimut +  " " + "pitch: " + pitch + " " + "roll: "+ roll);
             }
         }

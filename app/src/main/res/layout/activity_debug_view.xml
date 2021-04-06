@@ -15,6 +15,39 @@
         opencv:show_fps="true"
         tools:layout_editor_absoluteX="0dp" />
 
+    <TextView
+        android:id="@+id/azimut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/azimuth"
+        android:textColor="#FFFFFF"
+        opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
+        opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
+
+    <TextView
+        android:id="@+id/roll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="104dp"
+        android:text="@string/roll"
+        android:textColor="#FFFFFF"
+        opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
+        opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
+
+    <TextView
+        android:id="@+id/pitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="68dp"
+        android:text="@string/pitch"
+        android:textColor="#FFFFFF"
+        opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
+        opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
+
     <ImageView
         android:id="@+id/StoredView"
         android:layout_width="131dp"
