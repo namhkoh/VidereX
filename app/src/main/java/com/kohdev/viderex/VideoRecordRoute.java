@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 
@@ -203,8 +204,10 @@ public class VideoRecordRoute extends AppCompatActivity {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
+        String name = image.getName();
         absPath = image.getAbsolutePath();
         Log.e("current image path", absPath);
+        Toast.makeText(this, name + " extracted", Toast.LENGTH_SHORT).show();
         frameListPath.add(Uri.fromFile(image));
         FileOutputStream fo = new FileOutputStream(image);
         fo.write(bytes.toByteArray());
