@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "598042188083",
+    "project_id": "viderex-37179",
+    "storage_bucket": "viderex-37179.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:598042188083:android:66a44bc678497aca64c646",
+        "android_client_info": {
+          "package_name": "com.kohdev.viderex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "598042188083-voqgcc3r70gti7r894455pn1spdarskc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJhvTYR58H1p0pJT6R84qOMUZE1KBKYDE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "598042188083-voqgcc3r70gti7r894455pn1spdarskc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
