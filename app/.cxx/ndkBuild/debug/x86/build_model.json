@@ -1,6 +1,6 @@
 {
   "abi": "X86",
-  "abiPlatformVersion": 17,
+  "abiPlatformVersion": 21,
   "buildSettings": {
     "environmentVariables": []
   },

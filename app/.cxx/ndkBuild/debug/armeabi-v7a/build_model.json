@@ -1,6 +1,6 @@
 {
   "abi": "ARMEABI_V7A",
-  "abiPlatformVersion": 17,
+  "abiPlatformVersion": 21,
   "buildSettings": {
     "environmentVariables": []
   },
