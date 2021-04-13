@@ -367,7 +367,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public Double computeAbsDiff(Mat current, Mat goal) {
-        int range = 10;
+        int range = 1;
         int w = current.width();
         int h = current.height();
         Mat error = Mat.zeros(w, h, CV_8UC1);
@@ -396,19 +396,26 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 
         Scalar s = Core.sumElems(error);
         System.out.println(s);
-//        if (s.val[0] <= 7000) {
-//            if (Math.abs(incoming_azimuth - azimuth) <= range && Math.abs(incoming_pitch - pitch) <= range && Math.abs(incoming_roll - roll) <= range) {
-//                v.vibrate(100);
-//            }
-//        }
-        //TODO: logic to set the threshold dynamically
-        if (s.val[0] <= threshold) {
+        if (s.val[0] <= threshold && Math.abs(incoming_azimuth - azimuth) <= range && Math.abs(incoming_pitch - pitch) <= range && Math.abs(incoming_roll - roll) <= range) {
             diffVal.setTextColor(Color.GREEN);
-            //initTTS("Good");
+            azimuthTv.setTextColor(Color.GREEN);
+            pitchTv.setTextColor(Color.GREEN);
+            rollTv.setTextColor(Color.GREEN);
             v.vibrate(100);
         } else {
             diffVal.setTextColor(Color.RED);
+            azimuthTv.setTextColor(Color.RED);
+            pitchTv.setTextColor(Color.RED);
+            rollTv.setTextColor(Color.RED);
         }
+        //TODO: logic to set the threshold dynamically
+//        if (s.val[0] <= threshold) {
+//            diffVal.setTextColor(Color.GREEN);
+//            //initTTS("Good");
+//            v.vibrate(100);
+//        } else {
+//            diffVal.setTextColor(Color.RED);
+//        }
 
         return s.val[0];
     }

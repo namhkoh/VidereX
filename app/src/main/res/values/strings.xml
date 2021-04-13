@@ -32,6 +32,7 @@
     <string name="extractFrames">Extract frames</string>
     <string name="sendFrames">Follow Route</string>
     <string name="saveRoute">Save Route</string>
+    <string name="fetchRoutes">Fetch Route</string>
 
 
 </resources>

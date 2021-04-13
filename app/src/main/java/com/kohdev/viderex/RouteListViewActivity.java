@@ -14,13 +14,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class RouteListViewActivity extends AppCompatActivity {
 
@@ -32,11 +39,20 @@ public class RouteListViewActivity extends AppCompatActivity {
     ArrayList<Uri> framePathList = new ArrayList<Uri>();
     ArrayList<String> routeNameList = new ArrayList<String>();
 
+    private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("RouteObject/KZEdEXDKTP8Ag10X1TLa");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_list_view);
+//        Button fetch = findViewById(R.id.fetch);
+//        fetch.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                fetchRoutes();
+//            }
+//        });
 
         framePathList = (ArrayList<Uri>) getIntent().getSerializableExtra("uriList");
         json = (String) getIntent().getSerializableExtra("route_json");
@@ -95,5 +111,17 @@ public class RouteListViewActivity extends AppCompatActivity {
         });
         routeOptions.setAdapter(adapter);
     }
+
+//    private void fetchRoutes() {
+//        mDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//            @Override
+//            public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                if (documentSnapshot.exists()) {
+//                    Map<String,Object> myData = documentSnapshot.getData();
+//                    routeNameList.add((String) myData.get("route"));
+//                }
+//            }
+//        });
+//    }
 
 }
