@@ -30,7 +30,8 @@
     <string name="changeImageButton">Change</string>
     <string name="placeholder"> </string>
     <string name="extractFrames">Extract frames</string>
-    <string name="sendFrames">Send</string>
+    <string name="sendFrames">Follow Route</string>
+    <string name="saveRoute">Save Route</string>
 
 
 </resources>

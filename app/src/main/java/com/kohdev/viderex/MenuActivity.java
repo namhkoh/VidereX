@@ -140,16 +140,16 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
      * This method will launch the single match method.
      */
     private void launchSingleMatch() {
-//        dispatchTakePictureIntent();
-        Intent intent = new Intent(this, VideoRecordRoute.class);
-        startActivity(intent);
+        dispatchTakePictureIntent();
     }
 
     /**
      * Method to route the user to select route
      */
     private void recording_route() {
-        Intent intent = new Intent(this, RecordRouteActivity.class);
+//        Intent intent = new Intent(this, RecordRouteActivity.class);
+//        startActivity(intent);
+        Intent intent = new Intent(this, VideoRecordRoute.class);
         startActivity(intent);
     }
 

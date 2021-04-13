@@ -29,7 +29,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".DebugViewActivity"></activity>
+        <activity android:name=".RouteListViewActivity"></activity>
+        <activity android:name=".DebugViewActivity" />
         <activity
             android:name=".VideoRecordRoute"
             android:screenOrientation="landscape">

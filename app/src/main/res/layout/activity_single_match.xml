@@ -80,5 +80,14 @@
         opencv:layout_constraintLeft_toLeftOf="@id/OpenCVCamera"
         tools:srcCompat="@tools:sample/avatars" />
 
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/differenceChart"
+        android:layout_width="324dp"
+        android:layout_height="188dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        opencv:layout_constraintBottom_toBottomOf="@id/OpenCVCamera"
+        opencv:layout_constraintRight_toRightOf="@id/OpenCVCamera" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

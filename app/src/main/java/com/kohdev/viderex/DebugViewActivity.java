@@ -33,6 +33,8 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -72,6 +74,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
     Bitmap errorBit;
     boolean good_match;
     ArrayList<Uri> framePath;
+    String json;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +91,20 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         azimuthTv = findViewById(R.id.azimut);
         pitchTv = findViewById(R.id.pitch);
         rollTv = findViewById(R.id.roll);
+
+        json = (String) getIntent().getSerializableExtra("route_json");
+        JSONObject obj = null;
+        try {
+            obj = new JSONObject(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            String routeName = obj.getString("name");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println(json);
 
         mChart.getDescription().setText("Difference value");
         // enable description text

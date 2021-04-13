@@ -6,6 +6,10 @@ import androidx.core.content.FileProvider;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +18,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -22,6 +28,12 @@ import android.widget.VideoView;
 //import org.bytedeco.javacv.FFmpegFrameGrabber;
 //import org.bytedeco.javacv.Frame;
 //import org.bytedeco.javacv.OpenCVFrameConverter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -34,6 +46,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -43,14 +56,21 @@ import wseemann.media.FFmpegMediaMetadataRetriever;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
-public class VideoRecordRoute extends AppCompatActivity {
+public class VideoRecordRoute extends AppCompatActivity implements SensorEventListener {
 
     VideoView videoView;
     String absPath;
     Uri videoUri;
+    Route route;
+    EditText routeNameInput;
     InputStream videoStream;
-    //ArrayList<String> frameListPath = new ArrayList<String>();
+    String json;
+    ProgressBar pb;
     ArrayList<Uri> frameListPath = new ArrayList<Uri>();
+
+    private SensorManager mSensorManager;
+    Sensor accelerometer, magnetometer;
+    float azimuth, pitch, roll;
 
     static final int REQUEST_VIDEO_CAPTURE = 1;
     static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 1;
@@ -60,9 +80,20 @@ public class VideoRecordRoute extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.e("verify", String.valueOf(OpenCVLoader.initDebug()));
         setContentView(R.layout.activity_video_record_route);
+
         videoView = (VideoView) findViewById(R.id.routeVideo);
+        routeNameInput = findViewById(R.id.routeName);
+        pb = (ProgressBar) findViewById(R.id.progressBar);
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        route = new Route();
+
         Button getFrames = findViewById(R.id.extractFramesButton);
         Button sendFrames = findViewById(R.id.sendFrames);
+        Button saveRoute = findViewById(R.id.saveButton);
 
         getFrames.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -80,8 +111,20 @@ public class VideoRecordRoute extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), DebugViewActivity.class);
+                intent.putExtra("route_json", json);
                 intent.putExtra("image_path", frameListPath);
                 startActivity(intent);
+            }
+        });
+
+        saveRoute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    storeViews();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -164,6 +207,10 @@ public class VideoRecordRoute extends AppCompatActivity {
         String testPath = "/storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Videos/VID_20210402_133213_2599549758740143761.mp4";
         String path = "content://com.kohdev.viderex/my_movies/Videos/VID_20210402_133213_2599549758740143761.mp4";
 
+        for (int u = 0; u < 100; u++) {
+            pb.incrementProgressBy(u);
+        }
+
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
         med.setDataSource(absPath);
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -172,7 +219,9 @@ public class VideoRecordRoute extends AppCompatActivity {
         // The frames could be starting +1 the start. Investigate the main looper. 
         for (int i = 1000000; i < videoDuration * 1000; i += 1000000) {
             Bitmap bmp = med.getFrameAtTime(i, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
-            Log.d("Frame extracted at ", String.valueOf(i));
+            //pb.incrementProgressBy(i / 100000);
+//            System.out.println(i/100000);
+            //Log.d("Frame extracted at ", String.valueOf(i));
             saveBit(bmp);
         }
 
@@ -184,8 +233,8 @@ public class VideoRecordRoute extends AppCompatActivity {
         bmp.compress(Bitmap.CompressFormat.JPEG, 60, bytes);
 
         String currentTimestamp = String.valueOf(Instant.now().toEpochMilli());
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String frameName = "FRAME_" + currentTimestamp + "_";
+        String routeName = routeNameInput.getText().toString();
+        String frameName = "FRAME_" + currentTimestamp + "_" + routeName + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
 
         // Create the storage directory if it does not exist
@@ -209,11 +258,94 @@ public class VideoRecordRoute extends AppCompatActivity {
         Log.e("current image path", absPath);
         Toast.makeText(this, name + " extracted", Toast.LENGTH_SHORT).show();
         frameListPath.add(Uri.fromFile(image));
+        route.addNewSnapshot(Uri.fromFile(image), azimuth, pitch, roll);
         FileOutputStream fo = new FileOutputStream(image);
         fo.write(bytes.toByteArray());
         fo.close();
         return image;
     }
 
+    /**
+     * This function will store the taken view into views.
+     */
+    private void storeViews() throws JSONException {
+        route.setName(routeNameInput.getText().toString());
 
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Uri.class, new UriSerializer())
+                .create();
+        json = gson.toJson(route);
+        System.out.println(json);
+
+        JSONObject obj = new JSONObject(json);
+        // Get route name
+
+        Route route = new Route();
+        route.setName(obj.getString("name"));
+
+        // Reload snapshots
+        JSONArray snap = obj.getJSONArray("snapshots");
+
+        for (int i = 0; i < snap.length(); i++) {
+
+            JSONObject snapObj = snap.getJSONObject(i);
+
+            float azimuth = (float) snapObj.getDouble("azimuth");
+            float pitch = (float) snapObj.getDouble("pitch");
+            float roll = (float) snapObj.getDouble("roll");
+
+            Uri imageUri = Uri.parse(snapObj.getString("preprocessed_img_uri"));
+//            frameListPath.add(imageUri);
+            System.out.println(imageUri);
+            route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
+        }
+
+        Intent intent = new Intent(this, RouteListViewActivity.class);
+        intent.putExtra("route_json", json);
+        intent.putExtra("uriList", frameListPath);
+        startActivity(intent);
+    }
+
+
+    float[] mGravity;
+    float[] mGeomagnetic;
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+            mGravity = event.values;
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+            mGeomagnetic = event.values;
+        if (mGravity != null && mGeomagnetic != null) {
+            float R[] = new float[9];
+            float I[] = new float[9];
+            boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+            if (success) {
+                float orientation[] = new float[3];
+                SensorManager.getOrientation(R, orientation);
+                azimuth = orientation[0]; // orientation contains: azimut, pitch and roll
+                pitch = orientation[1];
+                roll = orientation[2];
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Check if OpenCV has loaded properly
+        mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSensorManager.unregisterListener(this);
+    }
 }
