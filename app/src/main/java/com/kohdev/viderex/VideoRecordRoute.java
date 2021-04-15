@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.hardware.Sensor;
@@ -36,6 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.opencsv.CSVWriter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +51,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -58,6 +61,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import wseemann.media.FFmpegMediaMetadataRetriever;
@@ -74,6 +78,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
     InputStream videoStream;
     String json;
     ProgressBar pb;
+    //    FileWriter writer;
     ArrayList<Uri> frameListPath = new ArrayList<Uri>();
 
     private SensorManager mSensorManager;
@@ -142,6 +147,15 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
     }
 
     private void dispatchTakeVideoIntent() {
+//        File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+//        File newStorageDir = new File(storageDir + "/SensorValues/");
+//        newStorageDir.mkdir();
+//        try {
+//            writer = new FileWriter(new File(newStorageDir, "sensors_" + System.currentTimeMillis() + ".csv"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
             File videoFile = null;
@@ -211,16 +225,6 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void extractImageFrame(String absPath) throws IOException {
-
-        File storageDirectory = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
-        String parentPath = "/storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/";
-        String testPath = "/storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Videos/VID_20210402_133213_2599549758740143761.mp4";
-        String path = "content://com.kohdev.viderex/my_movies/Videos/VID_20210402_133213_2599549758740143761.mp4";
-
-        for (int u = 0; u < 100; u++) {
-            pb.incrementProgressBy(u);
-        }
-
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
         med.setDataSource(absPath);
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -229,9 +233,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
         // The frames could be starting +1 the start. Investigate the main looper. 
         for (int i = 1000000; i < videoDuration * 1000; i += 1000000) {
             Bitmap bmp = med.getFrameAtTime(i, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
-            //pb.incrementProgressBy(i / 100000);
-//            System.out.println(i/100000);
-            //Log.d("Frame extracted at ", String.valueOf(i));
+            pb.incrementProgressBy(i / 100000);
             saveBit(bmp);
         }
 
@@ -335,6 +337,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
     float[] mGravity;
     float[] mGeomagnetic;
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
@@ -353,6 +356,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
                 roll = orientation[2];
             }
         }
+
     }
 
     @Override
@@ -372,5 +376,26 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
     protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
+    }
+
+    private void storeData(float a, float p, float r) {
+        String routeName = routeNameInput.getText().toString();
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+        File newStorageDir = new File(storageDir + "/SensorValues/");
+        newStorageDir.mkdir();
+        String csv = (newStorageDir + routeName + "_sensors.csv");
+
+        CSVWriter writer = null;
+        try {
+            writer = new CSVWriter(new FileWriter(csv));
+            List<String[]> data = new ArrayList<String[]>();
+            data.add(new String[]{"Azimuth", "Pitch", "Roll"});
+            data.add(new String[]{String.valueOf(a), String.valueOf(p), String.valueOf(r)});
+            writer.writeAll(data);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
