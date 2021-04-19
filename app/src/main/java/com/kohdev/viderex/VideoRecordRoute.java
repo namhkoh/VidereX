@@ -16,6 +16,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -89,6 +91,8 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
     static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 1;
 
     private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("RouteObject/KZEdEXDKTP8Ag10X1TLa");
+    private HandlerThread mSensorThread;
+    private Handler mSensorHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,7 +147,14 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
             }
         });
 
+//        mSensorThread = new HandlerThread("Sensor thread", Thread.MAX_PRIORITY);
+//        mSensorThread.start();
+//        mSensorHandler = new Handler(mSensorThread.getLooper()); //Blocks until looper is prepared, which is fairly quick
+//        mSensorManager.registerListener(this, accelerometer, 10, mSensorHandler);
+//        mSensorManager.registerListener(this, magnetometer, 10, mSensorHandler);
         dispatchTakeVideoIntent();
+
+
     }
 
     private void dispatchTakeVideoIntent() {
@@ -156,7 +167,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
 //            e.printStackTrace();
 //        }
 
-        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        final Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
             File videoFile = null;
             try {
@@ -354,6 +365,28 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
                 azimuth = orientation[0]; // orientation contains: azimut, pitch and roll
                 pitch = orientation[1];
                 roll = orientation[2];
+                System.out.println(pitch);
+//                String entry = azimuth + "," + pitch + "," + roll + ",";
+//                try {
+//                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+//                    File newStorageDir = new File(storageDir + "/SensorValues/");
+//                    newStorageDir.mkdir();
+//                    File file = new File(newStorageDir, "output.csv");
+//                    FileOutputStream f = new FileOutputStream(file, true);
+//                    try {
+//                        f.write(entry.getBytes());
+//                        f.flush();
+//                        f.close();
+//                        Toast.makeText(getBaseContext(), "Data saved", Toast.LENGTH_LONG).show();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+
+
             }
         }
 
