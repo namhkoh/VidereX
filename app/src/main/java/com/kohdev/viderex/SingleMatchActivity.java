@@ -29,6 +29,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.karlotoy.perfectune.instance.PerfectTune;
+
+import net.mabboud.android_tone_player.ContinuousBuzzer;
+import net.mabboud.android_tone_player.OneTimeBuzzer;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
@@ -41,6 +45,8 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.opencv.core.CvType.CV_32F;
 import static org.opencv.core.CvType.CV_8UC1;
@@ -71,6 +77,11 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     private Thread thread;
     private boolean plotData = true;
 
+    PerfectTune perfectTune = new PerfectTune();
+    ArrayList<Integer> badTones = new ArrayList<Integer>(Arrays.asList(0, 100, 200, 300, 400));
+    ArrayList<Integer> goodTones = new ArrayList<Integer>(Arrays.asList(500, 600, 700, 800, 900, 10000));
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -78,6 +89,8 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_single_match);
+
+
         Intent intent = getIntent();
 
         mOpenCvCameraView = findViewById(R.id.OpenCVCamera);
@@ -393,7 +406,8 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
                 }
             });
         }
-
+//    ArrayList<Integer> badTones = new ArrayList<Integer>(Arrays.asList(0,100,200,300,400));
+//    ArrayList<Integer> goodTones = new ArrayList<Integer>(Arrays.asList(500,600,700,800,900,10000));
         Scalar s = Core.sumElems(error);
         System.out.println(s);
         if (s.val[0] <= threshold && Math.abs(incoming_azimuth - azimuth) <= range && Math.abs(incoming_pitch - pitch) <= range && Math.abs(incoming_roll - roll) <= range) {
@@ -407,7 +421,29 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
             azimuthTv.setTextColor(Color.RED);
             pitchTv.setTextColor(Color.RED);
             rollTv.setTextColor(Color.RED);
+            //*nperfectTune.setTuneFreq(500);
+//            perfectTune.playTune();
+//            perfectTune.stopTune();
         }
+
+        // 4000, 5000, 6000, 7000,
+//        if (s.val[0] <= 3000) {
+//            perfectTune.setTuneFreq(1000);
+//        } else if (s.val[0] <= 4000) {
+//            perfectTune.setTuneFreq(900);
+//        } else if (s.val[0] <= 6000) {
+//            perfectTune.setTuneFreq(800);
+//        } else if (s.val[0] <= 8000) {
+//            perfectTune.setTuneFreq(700);
+//        } else if (s.val[0] <= 10000) {
+//            perfectTune.setTuneFreq(600);
+//        } else if (s.val[0] <= 13000) {
+//            perfectTune.setTuneFreq(500);
+//        }
+        perfectTune.setTuneFreq(setTune(s.val[0]));
+        perfectTune.playTune();
+
+
         //TODO: logic to set the threshold dynamically
 //        if (s.val[0] <= threshold) {
 //            diffVal.setTextColor(Color.GREEN);
@@ -418,6 +454,54 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 //        }
 
         return s.val[0];
+    }
+
+    private int setTune(double difference) {
+        int tuneValue = 0;
+        if (difference >= 16000) {
+            tuneValue = 40;
+        } else if (difference >= 15500) {
+            tuneValue = 50;
+        } else if (difference >= 15000) {
+            tuneValue = 60;
+        } else if (difference >= 14500) {
+            tuneValue = 70;
+        } else if (difference >= 14000) {
+            tuneValue = 80;
+        } else if (difference >= 13500) {
+            tuneValue = 90;
+        } else if (difference >= 13000) {
+            tuneValue = 100;
+        } else if (difference >= 12500) {
+            tuneValue = 110;
+        } else if (difference >= 12000) {
+            tuneValue = 120;
+        } else if (difference >= 11500) {
+            tuneValue = 130;
+        } else if (difference >= 11000) {
+            tuneValue = 140;
+        } else if (difference >= 10500) {
+            tuneValue = 150;
+        } else if (difference >= 10000) {
+            tuneValue = 160;
+        } else if (difference >= 9500) {
+            tuneValue = 170;
+        } else if (difference >= 9000) {
+            tuneValue = 180;
+        } else if (difference >= 8500) {
+            tuneValue = 190;
+        } else if (difference >= 8000) {
+            tuneValue = 200;
+        } else if (difference >= 7500) {
+            tuneValue = 210;
+        } else if (difference >= 7000) {
+            tuneValue = 220;
+        } else if (difference >= 6500) {
+            tuneValue = 230;
+        } else if (difference >= 6000) {
+            tuneValue = 240;
+        }
+        return tuneValue;
     }
 
     /**
