@@ -18,8 +18,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Trace;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.TimingLogger;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,6 +82,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
     InputStream videoStream;
     String json;
     ProgressBar pb;
+    int counter = 0;
     //    FileWriter writer;
     ArrayList<Uri> frameListPath = new ArrayList<Uri>();
 
@@ -152,6 +155,8 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
 //        mSensorHandler = new Handler(mSensorThread.getLooper()); //Blocks until looper is prepared, which is fairly quick
 //        mSensorManager.registerListener(this, accelerometer, 10, mSensorHandler);
 //        mSensorManager.registerListener(this, magnetometer, 10, mSensorHandler);
+
+
         dispatchTakeVideoIntent();
 
 
@@ -166,7 +171,6 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-
         final Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
             File videoFile = null;
@@ -236,6 +240,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void extractImageFrame(String absPath) throws IOException {
+        double startTime = System.nanoTime();
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
         med.setDataSource(absPath);
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -247,11 +252,15 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
             pb.incrementProgressBy(i / 100000);
             saveBit(bmp);
         }
+        Log.e("Measure", "Frame extraction took: " + (System.nanoTime() - startTime) / 1000000000 + "seconds ");
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private File saveBit(Bitmap bmp) throws IOException {
+        counter++;
+        double startTime = System.nanoTime();
+//        Log.e("Measure", "Frame extraction took: " + (System.nanoTime() - startTime) / 1000000 + "ms");
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.JPEG, 60, bytes);
 
@@ -279,7 +288,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
         String name = image.getName();
         absPath = image.getAbsolutePath();
         Log.e("current image path", absPath);
-        Toast.makeText(this, name + " extracted", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, counter + " extracted", Toast.LENGTH_SHORT).show();
         frameListPath.add(Uri.fromFile(image));
         route.addNewSnapshot(Uri.fromFile(image), azimuth, pitch, roll);
         FileOutputStream fo = new FileOutputStream(image);
@@ -365,7 +374,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
                 azimuth = orientation[0]; // orientation contains: azimut, pitch and roll
                 pitch = orientation[1];
                 roll = orientation[2];
-                System.out.println(pitch);
+//                System.out.println(pitch);
 //                String entry = azimuth + "," + pitch + "," + roll + ",";
 //                try {
 //                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
