@@ -122,7 +122,11 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
             @Override
             public void onClick(View v) {
                 try {
+                    //String testPath = "/storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Videos/VID_20210420_131506_3073708790641845353.mp4";
+                    //String testPath = "/storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Videos/VID_20210420_133150_6625767613026445277.mp4";
+                    //String testPath = "/storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Videos/VID_20210420_134543_7997093301182495455.mp4";
                     extractImageFrame(absPath);
+//                    extractImageFrame(absPath);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -226,6 +230,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
             case 1:
                 Log.e("Capture", "Success!");
                 videoStream = null;
+
                 try {
                     videoStream = getContentResolver().openInputStream(videoUri);
                 } catch (FileNotFoundException e) {
@@ -240,6 +245,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void extractImageFrame(String absPath) throws IOException {
+        System.out.println(absPath);
         double startTime = System.nanoTime();
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
         med.setDataSource(absPath);
@@ -289,6 +295,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
         absPath = image.getAbsolutePath();
         Log.e("current image path", absPath);
         Toast.makeText(this, counter + " extracted", Toast.LENGTH_SHORT).show();
+        Log.e("Counter: ", String.valueOf(counter));
         frameListPath.add(Uri.fromFile(image));
         route.addNewSnapshot(Uri.fromFile(image), azimuth, pitch, roll);
         FileOutputStream fo = new FileOutputStream(image);
