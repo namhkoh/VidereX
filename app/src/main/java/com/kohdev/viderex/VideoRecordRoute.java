@@ -297,7 +297,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
         Toast.makeText(this, counter + " extracted", Toast.LENGTH_SHORT).show();
         Log.e("Counter: ", String.valueOf(counter));
         frameListPath.add(Uri.fromFile(image));
-        route.addNewSnapshot(Uri.fromFile(image), azimuth, pitch, roll);
+        route.addNewSnapshot(Uri.fromFile(image));
         FileOutputStream fo = new FileOutputStream(image);
         fo.write(bytes.toByteArray());
         fo.close();
@@ -336,9 +336,11 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
             Uri imageUri = Uri.parse(snapObj.getString("preprocessed_img_uri"));
 //            frameListPath.add(imageUri);
             System.out.println(imageUri);
-            route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
+            //route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
+            route.addNewSnapshot(imageUri);
 
             Map<String, Object> dataToSave = new HashMap<String, Object>();
+            //dataToSave.put("route", json);
             dataToSave.put("route", json);
             mDocRef.set(dataToSave);
             mDocRef.set(dataToSave).addOnSuccessListener(new OnSuccessListener<Void>() {

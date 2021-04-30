@@ -33,6 +33,7 @@
     <string name="sendFrames">Follow Route</string>
     <string name="saveRoute">Save Route</string>
     <string name="fetchRoutes">Fetch Route</string>
+    <string name="refresh">Refresh</string>
 
 
 </resources>

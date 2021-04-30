@@ -158,8 +158,8 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
      */
     private void follow_route() {
 
-        Intent intent = new Intent(this, ShowRoutes.class);
-        intent.putExtra("images", uriList);
+        Intent intent = new Intent(this, RouteListViewActivity.class);
+        //intent.putExtra("images", uriList);
         startActivity(intent);
 
 //        Intent intent = new Intent(this, FollowRouteActivity.class);
@@ -167,8 +167,8 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
 //        intent.putExtra("uriList",uriList);
 //        startActivity(intent);
 
-    //        Intent intent = new Intent(this, SelectRouteActivity.class);
-    //        startActivity(intent);
+        //        Intent intent = new Intent(this, SelectRouteActivity.class);
+        //        startActivity(intent);
     }
 
     public void loadSavedData() {

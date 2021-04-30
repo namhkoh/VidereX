@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +19,22 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Source;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.ls.LSOutput;
 
 import java.util.ArrayList;
 import java.util.Map;
+
+import io.grpc.internal.JsonUtil;
 
 public class RouteListViewActivity extends AppCompatActivity {
 
@@ -35,12 +42,14 @@ public class RouteListViewActivity extends AppCompatActivity {
     private ListView routeOptions;
 
     String json;
+    Map jsonMap;
     String routeName;
     ArrayList<Uri> framePathList = new ArrayList<Uri>();
     ArrayList<String> routeNameList = new ArrayList<String>();
 
     private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("RouteObject/KZEdEXDKTP8Ag10X1TLa");
-
+    // Source can be CACHE, SERVER, or DEFAULT.
+    Source source = Source.CACHE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,23 +63,32 @@ public class RouteListViewActivity extends AppCompatActivity {
 //            }
 //        });
 
-        framePathList = (ArrayList<Uri>) getIntent().getSerializableExtra("uriList");
-        json = (String) getIntent().getSerializableExtra("route_json");
-        //routeNameList.add(json);
-        System.out.println(framePathList);
-        System.out.println(json);
-        JSONObject obj = null;
-        try {
-            obj = new JSONObject(json);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            routeName = obj.getString("name");
-            routeNameList.add(routeName);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        Button refresh = findViewById(R.id.refresh);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refreshRoutes();
+            }
+        });
+
+
+//        framePathList = (ArrayList<Uri>) getIntent().getSerializableExtra("uriList");
+//        json = (String) getIntent().getSerializableExtra("route_json");
+//        //routeNameList.add(json);
+//        System.out.println(framePathList);
+//        System.out.println(json);
+//        JSONObject obj = null;
+//        try {
+//            obj = new JSONObject(json);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            routeName = obj.getString("name");
+//            routeNameList.add(routeName);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 
 
         //Used to automatically update the list on the screen.
@@ -112,16 +130,36 @@ public class RouteListViewActivity extends AppCompatActivity {
         routeOptions.setAdapter(adapter);
     }
 
-//    private void fetchRoutes() {
-//        mDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//    private void refreshRoutes() {
+//        mDocRef.get(source).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
 //            @Override
-//            public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                if (documentSnapshot.exists()) {
-//                    Map<String,Object> myData = documentSnapshot.getData();
-//                    routeNameList.add((String) myData.get("route"));
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                System.out.println("Entering land");
+//                if (task.isSuccessful()) {
+//                    DocumentSnapshot document = task.getResult();
+//                    jsonMap = document.getData();
+//                    Log.d("Document", "Cached document data: " + document.getData());
+//                } else {
+//                    Log.d("Document", "Cached document failed: " + task.getException());
 //                }
 //            }
 //        });
 //    }
+
+    private void refreshRoutes() {
+        mDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    Map<String, Object> myData = documentSnapshot.getData();
+                    System.out.println(myData.get("route"));
+                    //TODO create json object and extract all the strings, especially the image URIs and then add them to the frame list
+                    
+//                    routeNameList.add((String) myData.get("route"));
+//                    System.out.println(routeNameList.get(0));
+                }
+            }
+        });
+    }
 
 }
