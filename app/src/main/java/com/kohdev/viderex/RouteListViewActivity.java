@@ -22,9 +22,12 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Source;
 import com.google.gson.Gson;
@@ -50,11 +53,13 @@ public class RouteListViewActivity extends AppCompatActivity {
     String json;
     Map jsonMap;
     String routeName;
+    String privateId;
     ArrayList<Uri> framePathList = new ArrayList<Uri>();
     ArrayList<Uri> image_path = new ArrayList<Uri>();
     ArrayList<String> routeNameList = new ArrayList<String>();
 
     private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("RouteObject/C3Mld3o8fOLPaFQttnm5");
+    private CollectionReference mCollRef = FirebaseFirestore.getInstance().collection("RouteObject");
     Source source = Source.CACHE;
 
     @Override
@@ -69,6 +74,7 @@ public class RouteListViewActivity extends AppCompatActivity {
                 refreshRoutes();
             }
         });
+        loadCollection();
 
         try {
             framePathList = (ArrayList<Uri>) getIntent().getSerializableExtra("uriList");
@@ -92,7 +98,7 @@ public class RouteListViewActivity extends AppCompatActivity {
             n.printStackTrace();
         }
 
-        refreshRoutes();
+        //refreshRoutes();
 
 
         //Used to automatically update the list on the screen.
@@ -171,9 +177,7 @@ public class RouteListViewActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    Log.d("Firestore object: ", obj.toString());
                     try {
-//                        Log.d("snapshot: ", obj.getString("snapshots"));
                         JSONArray snap = obj.getJSONArray("snapshots");
                         for (int i = 0; i < snap.length(); i++) {
                             JSONObject snapObj = snap.getJSONObject(i);
@@ -222,6 +226,76 @@ public class RouteListViewActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                }
+            }
+        });
+    }
+
+    private void loadCollection() {
+        mCollRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    Map<String, Object> myData = documentSnapshot.getData();
+                    //System.out.println(myData);
+                    JSONObject obj = null;
+                    privateId = documentSnapshot.getId();
+                    try {
+                        obj = new JSONObject((String) myData.get("route"));
+//                        System.out.println(obj);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        routeName = obj.getString("name");
+                        routeNameList.add(routeName);
+//                        System.out.println(routeNameList);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        JSONArray snap = obj.getJSONArray("snapshots");
+                        System.out.println(snap);
+                        //TODO add feature to choose the correct route and add that to the image path.
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, routeNameList) {
+                        @NonNull
+                        @Override
+                        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                            TextView item = (TextView) super.getView(position, convertView, parent);
+                            item.setTextColor(Color.parseColor("#000000"));
+                            item.setTypeface(item.getTypeface(), Typeface.BOLD);
+                            item.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 25);
+                            item.setAlpha(0.7f);
+                            return item;
+                        }
+                    };
+                    routeOptions = findViewById(R.id.route_list);
+                    routeOptions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            String item = (String) adapter.getItem(position);
+                            System.out.println(item);
+                            for (int i = 0; i < routeOptions.getChildCount(); i++) {
+                                if (position == i) {
+                                    routeOptions.getChildAt(i).setBackgroundColor(Color.parseColor("#8c8c8c"));
+                                } else {
+                                    routeOptions.getChildAt(i).setBackgroundColor(Color.parseColor("#f2f2f2"));
+                                }
+                            }
+
+                            // Find the correct route with name
+                            if (item.equals(routeName)) {
+                                Intent intent = new Intent(getApplicationContext(), DebugViewActivity.class);
+                                intent.putExtra("route_json", json);
+                                intent.putExtra("image_path", image_path);
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                    routeOptions.setAdapter(adapter);
                 }
             }
         });

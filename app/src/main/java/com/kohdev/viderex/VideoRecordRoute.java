@@ -344,14 +344,8 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
             //route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
             route.addNewSnapshot(imageUri);
 
-
-            Map<String, Object> dataToSave = new HashMap<String, Object>();
-            dataToSave.put("route", json);
-
-//            mCollRef.add(dataToSave);
-
-            //mDocRef.set(dataToSave);
-            mDocRef.set(dataToSave, SetOptions.merge());
+//            mDocRef.set(dataToSave);
+//            mDocRef.set(dataToSave, SetOptions.merge());
 //            mDocRef.set(dataToSave).addOnSuccessListener(new OnSuccessListener<Void>() {
 //                @Override
 //                public void onSuccess(Void aVoid) {
@@ -365,6 +359,10 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
 //            });
 
         }
+        Map<String, Object> dataToSave = new HashMap<String, Object>();
+        dataToSave.put("route", json);
+
+        mCollRef.add(dataToSave);
 
         Intent intent = new Intent(this, RouteListViewActivity.class);
         intent.putExtra("route_json", json);
