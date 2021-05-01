@@ -92,19 +92,19 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         pitchTv = findViewById(R.id.pitch);
         rollTv = findViewById(R.id.roll);
 
-        json = (String) getIntent().getSerializableExtra("route_json");
-        JSONObject obj = null;
-        try {
-            obj = new JSONObject(json);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            String routeName = obj.getString("name");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        System.out.println(json);
+        //json = (String) getIntent().getSerializableExtra("route_json");
+//        JSONObject obj = null;
+//        try {
+//            obj = new JSONObject(json);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            String routeName = obj.getString("name");
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(json);
 
         mChart.getDescription().setText("Difference value");
         // enable description text

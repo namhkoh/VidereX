@@ -36,9 +36,11 @@ import android.widget.VideoView;
 //import org.bytedeco.javacv.OpenCVFrameConverter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.SetOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.opencsv.CSVWriter;
@@ -93,7 +95,9 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
     static final int REQUEST_VIDEO_CAPTURE = 1;
     static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 1;
 
-    private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("RouteObject/KZEdEXDKTP8Ag10X1TLa");
+    private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("RouteObject/C3Mld3o8fOLPaFQttnm5");
+    private CollectionReference mCollRef = FirebaseFirestore.getInstance().collection("RouteObject");
+
     private HandlerThread mSensorThread;
     private Handler mSensorHandler;
 
@@ -112,6 +116,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         route = new Route();
+        System.out.println(route);
 
         Button getFrames = findViewById(R.id.extractFramesButton);
         Button sendFrames = findViewById(R.id.sendFrames);
@@ -339,21 +344,26 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
             //route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
             route.addNewSnapshot(imageUri);
 
+
             Map<String, Object> dataToSave = new HashMap<String, Object>();
-            //dataToSave.put("route", json);
             dataToSave.put("route", json);
-            mDocRef.set(dataToSave);
-            mDocRef.set(dataToSave).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d("Route storing...", "Document has been saved!");
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w("Route Storing...", "Document was not saved!", e);
-                }
-            });
+
+//            mCollRef.add(dataToSave);
+
+            //mDocRef.set(dataToSave);
+            mDocRef.set(dataToSave, SetOptions.merge());
+//            mDocRef.set(dataToSave).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                @Override
+//                public void onSuccess(Void aVoid) {
+//                    Log.d("Route storing...", "Document has been saved!");
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//                    Log.w("Route Storing...", "Document was not saved!", e);
+//                }
+//            });
+
         }
 
         Intent intent = new Intent(this, RouteListViewActivity.class);
