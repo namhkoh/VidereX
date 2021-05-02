@@ -32,6 +32,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.karlotoy.perfectune.instance.PerfectTune;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,6 +76,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
     boolean good_match;
     ArrayList<Uri> framePath;
     String json;
+    PerfectTune perfectTune = new PerfectTune();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -251,6 +253,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         mSensorManager.unregisterListener(this);
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
+            perfectTune.stopTune();
         }
     }
 
@@ -260,7 +263,9 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         super.onDestroy();
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
+            perfectTune.stopTune();
         }
+
     }
 
     @Override
@@ -381,13 +386,16 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         Scalar s = Core.sumElems(error);
         if (s.val[0] <= threshold) {
             diffVal.setTextColor(Color.GREEN);
-//            v.vibrate(100);
             v.vibrate(pattern, -1);
             good_match = true;
         } else {
             diffVal.setTextColor(Color.RED);
             good_match = false;
         }
+
+        perfectTune.setTuneFreq(setTune(s.val[0]));
+        perfectTune.playTune();
+
         return s.val[0];
     }
 
@@ -481,5 +489,53 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         });
 
         thread.start();
+    }
+
+    private int setTune(double difference) {
+        int tuneValue = 0;
+        if (difference >= 16000) {
+            tuneValue = 40;
+        } else if (difference >= 15500) {
+            tuneValue = 50;
+        } else if (difference >= 15000) {
+            tuneValue = 60;
+        } else if (difference >= 14500) {
+            tuneValue = 70;
+        } else if (difference >= 14000) {
+            tuneValue = 80;
+        } else if (difference >= 13500) {
+            tuneValue = 90;
+        } else if (difference >= 13000) {
+            tuneValue = 100;
+        } else if (difference >= 12500) {
+            tuneValue = 110;
+        } else if (difference >= 12000) {
+            tuneValue = 120;
+        } else if (difference >= 11500) {
+            tuneValue = 130;
+        } else if (difference >= 11000) {
+            tuneValue = 140;
+        } else if (difference >= 10500) {
+            tuneValue = 150;
+        } else if (difference >= 10000) {
+            tuneValue = 160;
+        } else if (difference >= 9500) {
+            tuneValue = 170;
+        } else if (difference >= 9000) {
+            tuneValue = 180;
+        } else if (difference >= 8500) {
+            tuneValue = 190;
+        } else if (difference >= 8000) {
+            tuneValue = 200;
+        } else if (difference >= 7500) {
+            tuneValue = 210;
+        } else if (difference >= 7000) {
+            tuneValue = 220;
+        } else if (difference >= 6500) {
+            tuneValue = 230;
+        } else if (difference >= 6000) {
+            tuneValue = 240;
+        }
+        return tuneValue;
     }
 }

@@ -349,6 +349,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         mSensorManager.unregisterListener(this);
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
+            perfectTune.stopTune();
         }
     }
 
@@ -444,9 +445,9 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
 
     private int setFrequency(double difference) {
         int normalizedValue = 0;
-        normalizedValue = (int) (difference - 3500 / 16000 - difference * 10000);
-        Math.abs(normalizedValue);
+        normalizedValue = (int) (difference - 3500 / 16000 - difference * 1000);
         System.out.println(Math.abs(normalizedValue));
+        Log.e("freq", String.valueOf(Math.abs(normalizedValue)));
         return Math.abs(normalizedValue);
     }
 
