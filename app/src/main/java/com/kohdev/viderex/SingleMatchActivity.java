@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.media.ToneGenerator;
 import android.os.Build;
 import android.os.Vibrator;
 import android.hardware.SensorManager;
@@ -80,6 +81,17 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     PerfectTune perfectTune = new PerfectTune();
     ArrayList<Integer> badTones = new ArrayList<Integer>(Arrays.asList(0, 100, 200, 300, 400));
     ArrayList<Integer> goodTones = new ArrayList<Integer>(Arrays.asList(500, 600, 700, 800, 900, 10000));
+
+
+    public static double maxFreq = 1760.0;
+    public static double minFreq = 220.0;
+    public static double toneLength = 75.0;
+    public static boolean useOldSound = false;
+//    // Tone parameters
+//    private static final int TONE_BAD = ToneGenerator.TONE_DTMF_1;
+//    private static final int TONE_OK = ToneGenerator.TONE_DTMF_5;
+//    private static final int TONE_GOOD = ToneGenerator.TONE_PROP_ACK;
+//    private static final int TONE_MISORIENTED = ToneGenerator.TONE_SUP_ERROR;
 
 
     @Override
@@ -347,6 +359,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
         }
+        perfectTune.stopTune();
     }
 
 
@@ -421,39 +434,20 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
             azimuthTv.setTextColor(Color.RED);
             pitchTv.setTextColor(Color.RED);
             rollTv.setTextColor(Color.RED);
-            //*nperfectTune.setTuneFreq(500);
-//            perfectTune.playTune();
-//            perfectTune.stopTune();
         }
-
-        // 4000, 5000, 6000, 7000,
-//        if (s.val[0] <= 3000) {
-//            perfectTune.setTuneFreq(1000);
-//        } else if (s.val[0] <= 4000) {
-//            perfectTune.setTuneFreq(900);
-//        } else if (s.val[0] <= 6000) {
-//            perfectTune.setTuneFreq(800);
-//        } else if (s.val[0] <= 8000) {
-//            perfectTune.setTuneFreq(700);
-//        } else if (s.val[0] <= 10000) {
-//            perfectTune.setTuneFreq(600);
-//        } else if (s.val[0] <= 13000) {
-//            perfectTune.setTuneFreq(500);
-//        }
+//        perfectTune.setTuneFreq(setTune(s.val[0]));
         perfectTune.setTuneFreq(setTune(s.val[0]));
         perfectTune.playTune();
 
-
-        //TODO: logic to set the threshold dynamically
-//        if (s.val[0] <= threshold) {
-//            diffVal.setTextColor(Color.GREEN);
-//            //initTTS("Good");
-//            v.vibrate(100);
-//        } else {
-//            diffVal.setTextColor(Color.RED);
-//        }
-
         return s.val[0];
+    }
+
+    private int setFrequency(double difference) {
+        int normalizedValue = 0;
+        normalizedValue = (int) (difference - 3500 / 16000 - difference * 10000);
+        Math.abs(normalizedValue);
+        System.out.println(Math.abs(normalizedValue));
+        return Math.abs(normalizedValue);
     }
 
     private int setTune(double difference) {
