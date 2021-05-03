@@ -34,8 +34,20 @@
     <string name="saveRoute">Save Route</string>
     <string name="fetchRoutes">Fetch Route</string>
     <string name="refresh">Refresh</string>
-
     <string name="utterance"></string>
+
+    //Content description
+    <string name="JavaCameraView">Java camera view</string>
+    <string name="differenceValue">Difference value</string>
+    <string name="diffChart">Difference value chart</string>
+    <string name="Speech">Speech</string>
+    <string name="detected">Detected utterance</string>
+    <string name="routeList">Route list</string>
+    <string name="thrDesc">Threshold bar</string>
+    <string name="thrDescValue">Threshold value</string>
+    <string name="VideoView">Video taken</string>
+    <string name="EnterRouteName">Enter RouteName</string>
+    <string name="pogBar">Progress bar</string>
 
 
 </resources>
