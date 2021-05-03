@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,12 +24,21 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.VideoView;
 
@@ -51,14 +61,18 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -67,6 +81,7 @@ import java.util.Set;
 public class MenuActivity extends AppCompatActivity implements SensorEventListener {
 
 
+    private static final String TAG = "SPEECH";
     final int MY_PERMISSIONS_REQUEST_CAMERA = 1;
     final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2;
     final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 3;
@@ -97,6 +112,11 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     private static final String MODEL_FILENAME = "file:///android_asset/conv_actions_frozen.tflite";
     private static final String LOG_TAG = MenuActivity.class.getSimpleName();
 
+    //Android speech
+    private TextToSpeech textToSpeech;
+    private ImageButton speechButton;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -132,6 +152,8 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
+        speechButton = findViewById(R.id.speechButton);
+
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -151,6 +173,116 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
             uriToBitmap(uriList.get(0));
         }
         prefs = getPreferences(Context.MODE_PRIVATE);
+
+        //Speech block
+        final SpeechRecognizer mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        final Intent mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        mSpeechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+                Log.d(TAG, "onReadyForSpeech");
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+                Log.d(TAG, "onBeginningfSpeech");
+            }
+
+            @Override
+            public void onRmsChanged(float v) {
+
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+                Log.e(TAG, "this is on end of speech.");
+            }
+
+            @Override
+            public void onError(int i) {
+                Log.e(TAG, "on Error: " + i);
+
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+                Log.e(TAG, "on Results");
+                //getting all the matches
+                ArrayList<String> matches = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                Log.e("ALL MATCHES", matches.toString());
+
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
+        speechButton.setOnTouchListener((view, motionEvent) -> {
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_UP:
+                    mSpeechRecognizer.stopListening();
+                    break;
+
+                case MotionEvent.ACTION_DOWN:
+                    mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                    System.out.println("listening");
+                    break;
+            }
+            return false;
+        });
+
+//        // SPEECH TO TEXT END
+//
+//        textToSpeech = new TextToSpeech(getApplicationContext(), status -> {
+//
+//        });
+//
+//        //Results of pressing the speech button.
+//        textToSpeech.setOnUtteranceProgressListener(
+//                new UtteranceProgressListener() {
+//                    @Override
+//                    public void onStart(String utteranceId) {
+//                        speechButton.setEnabled(false);
+//                    }
+//
+//                    @Override
+//                    public void onDone(String utteranceId) {
+//                        if (index == list.size()) {
+//                            Log.d("Log", "Speach button deactivated");
+//                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    speechButton.setEnabled(false);
+//                                }
+//                            });
+//                        } else {
+//                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    speechButton.setEnabled(true);
+//                                }
+//                            });
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onError(String utteranceId) {
+//
+//                    }
+//                });
     }
 
 
@@ -354,7 +486,7 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     private void requestMicrophonePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(
-                    new String[] {android.Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO);
+                    new String[]{android.Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO);
         }
     }
 
@@ -402,7 +534,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
-    /** Memory-map the model file in Assets. */
+    /**
+     * Memory-map the model file in Assets.
+     */
     private static MappedByteBuffer loadModelFile(AssetManager assets, String modelFilename)
             throws IOException {
         AssetFileDescriptor fileDescriptor = assets.openFd(modelFilename);

@@ -41,6 +41,10 @@ android {
         exclude 'META-INF/native-image/ios-x86_64/jnijavacpp/reflect-config.json'
         exclude 'META-INF/native-image/linux-x86_64/jnijavacpp/jni-config.json'
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 repositories {
