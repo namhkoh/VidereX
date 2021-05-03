@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
@@ -18,11 +20,13 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -35,15 +39,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.opencv.android.OpenCVLoader;
+import org.tensorflow.lite.Interpreter;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -82,12 +91,19 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     ImageView testView;
     String json;
 
+    private Interpreter tfLite;
+    private static final int REQUEST_RECORD_AUDIO = 13;
+    private static final String LABEL_FILENAME = "file:///android_asset/conv_actions_labels.txt";
+    private static final String MODEL_FILENAME = "file:///android_asset/conv_actions_frozen.tflite";
+    private static final String LOG_TAG = MenuActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         OpenCVLoader.initDebug();
 
         checkPermissions();
+        requestMicrophonePermission();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
@@ -120,8 +136,10 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-        testView = (ImageView) findViewById(R.id.imageTest);
+//        testView = (ImageView) findViewById(R.id.imageTest);
 
+        String actualLabelFilename = LABEL_FILENAME.split("file:///android_asset/", -1)[1];
+        Log.e(LOG_TAG, "Reading labels from: " + actualLabelFilename);
 
         if (routes == null) {
             routes = new HashMap<>();
@@ -180,7 +198,7 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
             ParcelFileDescriptor parcelFileDescriptor = getContentResolver().openFileDescriptor(selectedFileUri, "r");
             FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
             Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-            testView.setImageBitmap(image);
+//            testView.setImageBitmap(image);
             parcelFileDescriptor.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -333,6 +351,13 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    private void requestMicrophonePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(
+                    new String[] {android.Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO);
+        }
+    }
+
 
     float[] mGravity;
     float[] mGeomagnetic;
@@ -374,6 +399,18 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume() {
         super.onResume();
         mSensorManager.unregisterListener(this);
+    }
+
+
+    /** Memory-map the model file in Assets. */
+    private static MappedByteBuffer loadModelFile(AssetManager assets, String modelFilename)
+            throws IOException {
+        AssetFileDescriptor fileDescriptor = assets.openFd(modelFilename);
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
     }
 
 

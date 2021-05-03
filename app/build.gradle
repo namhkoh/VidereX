@@ -66,5 +66,6 @@ dependencies {
     implementation 'com.opencsv:opencsv:4.6'
     implementation 'net.mabboud:android-tone-player:0.2'
     implementation 'com.github.karlotoy:perfectTune:1.0.2'
+    implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly'
 
 }
