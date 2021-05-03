@@ -17,7 +17,9 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -72,6 +74,8 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
     int frameCount;
     Bitmap errorBit;
     private TextToSpeech textToSpeech;
+    SeekBar seekBar;
+
 
     // Charting tools
     private LineChart mChart;
@@ -139,6 +143,26 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         Mat goalTmp = bitmapToMat(goalImage);
         resizedImage = new Mat();
         resizedImage = prepare_data(goalTmp, 100, 50);
+
+        seekBar = (SeekBar) findViewById(R.id.thresholder);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                threshold = progress + 1000;
+                System.out.println(threshold);
+                Toast.makeText(getApplicationContext(), "seekbar progress: " + threshold, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override

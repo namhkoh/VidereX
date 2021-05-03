@@ -73,7 +73,7 @@
         android:id="@+id/differenceView"
         android:layout_width="120dp"
         android:layout_height="97dp"
-        android:layout_marginLeft="200dp"
+        android:layout_marginStart="200dp"
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/differenceImageView"
         opencv:layout_constraintBottom_toBottomOf="@id/OpenCVCamera"
@@ -84,10 +84,30 @@
         android:id="@+id/differenceChart"
         android:layout_width="324dp"
         android:layout_height="188dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         opencv:layout_constraintBottom_toBottomOf="@id/OpenCVCamera"
         opencv:layout_constraintRight_toRightOf="@id/OpenCVCamera" />
+
+    <SeekBar
+        android:id="@+id/thresholder"
+        android:layout_width="274dp"
+        android:layout_height="10dp"
+        android:layout_marginTop="120dp"
+        android:layout_marginEnd="16dp"
+        android:max="9000"
+        opencv:layout_constraintEnd_toEndOf="parent"
+        opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
+
+    <TextView
+        android:id="@+id/currThreshold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="84dp"
+        android:layout_marginEnd="84dp"
+        android:text="@string/placeholder"
+        opencv:layout_constraintRight_toRightOf="@id/OpenCVCamera"
+        opencv:layout_constraintTop_toTopOf="@id/OpenCVCamera" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
