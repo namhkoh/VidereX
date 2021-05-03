@@ -35,5 +35,7 @@
     <string name="fetchRoutes">Fetch Route</string>
     <string name="refresh">Refresh</string>
 
+    <string name="utterance"></string>
+
 
 </resources>

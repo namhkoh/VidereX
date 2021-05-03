@@ -56,6 +56,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.opencv.android.OpenCVLoader;
 import org.tensorflow.lite.Interpreter;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -113,6 +114,7 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     ArrayList<Uri> uriList = new ArrayList<Uri>();
     ImageView testView;
     String json;
+    TextView utterance;
 
     private static final int SAMPLE_RATE = 16000;
     private static final int SAMPLE_DURATION_MS = 1000;
@@ -191,6 +193,7 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         });
 
         speechButton = findViewById(R.id.speechButton);
+        utterance = findViewById(R.id.utterance);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -198,42 +201,42 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
 
 //        testView = (ImageView) findViewById(R.id.imageTest);
 
-        String actualLabelFilename = LABEL_FILENAME.split("file:///android_asset/", -1)[1];
-        Log.e(LOG_TAG, "Reading labels from: " + actualLabelFilename);
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new InputStreamReader(getAssets().open(actualLabelFilename)));
-            String line;
-            while ((line = br.readLine()) != null) {
-                labels.add(line);
-                if (line.charAt(0) != '_') {
-                    displayedLabels.add(line.substring(0, 1).toUpperCase() + line.substring(1));
-                }
-            }
-            br.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Problem reading label file!", e);
-        }
+//        String actualLabelFilename = LABEL_FILENAME.split("file:///android_asset/", -1)[1];
+//        Log.e(LOG_TAG, "Reading labels from: " + actualLabelFilename);
+//        BufferedReader br = null;
+//        try {
+//            br = new BufferedReader(new InputStreamReader(getAssets().open(actualLabelFilename)));
+//            String line;
+//            while ((line = br.readLine()) != null) {
+//                labels.add(line);
+//                if (line.charAt(0) != '_') {
+//                    displayedLabels.add(line.substring(0, 1).toUpperCase() + line.substring(1));
+//                }
+//            }
+//            br.close();
+//        } catch (IOException e) {
+//            throw new RuntimeException("Problem reading label file!", e);
+//        }
 
         // Set up an object to smooth recognition results to increase accuracy.
-        recognizeCommands =
-                new RecognizeCommands(
-                        labels,
-                        AVERAGE_WINDOW_DURATION_MS,
-                        DETECTION_THRESHOLD,
-                        SUPPRESSION_MS,
-                        MINIMUM_COUNT,
-                        MINIMUM_TIME_BETWEEN_SAMPLES_MS);
-
-        String actualModelFilename = MODEL_FILENAME.split("file:///android_asset/", -1)[1];
-        try {
-            tfLite = new Interpreter(loadModelFile(getAssets(), actualModelFilename));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        tfLite.resizeInput(0, new int[]{RECORDING_LENGTH, 1});
-        tfLite.resizeInput(1, new int[]{1});
+//        recognizeCommands =
+//                new RecognizeCommands(
+//                        labels,
+//                        AVERAGE_WINDOW_DURATION_MS,
+//                        DETECTION_THRESHOLD,
+//                        SUPPRESSION_MS,
+//                        MINIMUM_COUNT,
+//                        MINIMUM_TIME_BETWEEN_SAMPLES_MS);
+//
+//        String actualModelFilename = MODEL_FILENAME.split("file:///android_asset/", -1)[1];
+//        try {
+//            tfLite = new Interpreter(loadModelFile(getAssets(), actualModelFilename));
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        tfLite.resizeInput(0, new int[]{RECORDING_LENGTH, 1});
+//        tfLite.resizeInput(1, new int[]{1});
 
         if (routes == null) {
             routes = new HashMap<>();
@@ -246,81 +249,153 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         }
         prefs = getPreferences(Context.MODE_PRIVATE);
 
-        //Speech block
-//        final SpeechRecognizer mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-//        final Intent mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-//        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-//        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-//        mSpeechRecognizer.setRecognitionListener(new RecognitionListener() {
-//            @Override
-//            public void onReadyForSpeech(Bundle bundle) {
-//                Log.d(TAG, "onReadyForSpeech");
-//            }
-//
-//            @Override
-//            public void onBeginningOfSpeech() {
-//                Log.d(TAG, "onBeginningfSpeech");
-//            }
-//
-//            @Override
-//            public void onRmsChanged(float v) {
-//
-//            }
-//
-//            @Override
-//            public void onBufferReceived(byte[] bytes) {
-//
-//            }
-//
-//            @Override
-//            public void onEndOfSpeech() {
-//                Log.e(TAG, "this is on end of speech.");
-//            }
-//
-//            @Override
-//            public void onError(int i) {
-//                Log.e(TAG, "on Error: " + i);
-//
-//            }
-//
-//            @Override
-//            public void onResults(Bundle bundle) {
-//                Log.e(TAG, "on Results");
-//                //getting all the matches
-//                ArrayList<String> matches = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-//                Log.e("ALL MATCHES", matches.toString());
-//
-//            }
-//
-//            @Override
-//            public void onPartialResults(Bundle bundle) {
-//            }
-//
-//            @Override
-//            public void onEvent(int i, Bundle bundle) {
-//
-//            }
-//        });
-//
+//        Speech block
+        final SpeechRecognizer mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        final Intent mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        mSpeechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+                Log.d(TAG, "onReadyForSpeech");
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+                Log.d(TAG, "onBeginningfSpeech");
+            }
+
+            @Override
+            public void onRmsChanged(float v) {
+
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+                Log.e(TAG, "this is on end of speech.");
+            }
+
+            @Override
+            public void onError(int i) {
+                Log.e(TAG, "on Error: " + i);
+
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+                Log.e(TAG, "on Results");
+                String userInput = "";
+                ArrayList<String> matches = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                userInput = matches.get(0);
+                utterance.setText("Detected utterance: " + userInput);
+                Log.e("ALL MATCHES", userInput);
+                runCommand(userInput);
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
         speechButton.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_UP:
-//                    mSpeechRecognizer.stopListening();
-                    stopRecognition();
-                    stopRecording();
+                    mSpeechRecognizer.stopListening();
+//                    stopRecognition();
+//                    stopRecording();
                     break;
 
                 case MotionEvent.ACTION_DOWN:
-//                    mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                    mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
                     System.out.println("listening");
-                    startRecording();
-                    startRecognition();
+//                    startRecording();
+//                    startRecognition();
 
                     break;
             }
             return false;
         });
 
+        textToSpeech = new TextToSpeech(getApplicationContext(), status -> {
+
+        });
+
+        //Results of pressing the speech button.
+        textToSpeech.setOnUtteranceProgressListener(
+                new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String utteranceId) {
+                        speechButton.setEnabled(false);
+                    }
+
+                    @Override
+                    public void onDone(String utteranceId) {
+
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+
+                    }
+                });
+
+
+    }
+
+    /**
+     * This function will take the user input utterance and run the command.
+     *
+     * @param userUtterance String value of user input utterance
+     */
+    private void runCommand(String userUtterance) {
+        System.out.println(userUtterance);
+//        switch (userUtterance) {
+//            case "single match":
+//                initTTS("Entering single matching activity");
+//                launchSingleMatch();
+//                break;
+//            case "record route":
+//                initTTS("Entering record route activity");
+//                recording_route();
+//                break;
+//            case "follow route":
+//                initTTS("Entering activity to select route");
+//                follow_route();
+//                break;
+//        }
+        if (userUtterance.contains("single match") || userUtterance.contains("single") || userUtterance.contains("match")) {
+            initTTS("Opening single match activity");
+            launchSingleMatch();
+        } else if (userUtterance.contains("record route") || userUtterance.contains("record") || userUtterance.contains("create")) {
+            initTTS("Opening record route activity");
+            recording_route();
+        } else if (userUtterance.contains("follow route") || userUtterance.contains("follow") || userUtterance.contains("select")) {
+            initTTS("Opening follow route activity");
+            follow_route();
+        }
+    }
+
+    /**
+     * A voice reads the text given in the method.
+     *
+     * @param selectedText The String text that is read.
+     */
+    private void initTTS(String selectedText) {
+        //textToSpeech.setSpeechRate(testingVal);
+        int speechStatus = textToSpeech.speak(selectedText, TextToSpeech.QUEUE_ADD, null, "1");
+        if (speechStatus == TextToSpeech.ERROR) {
+            Log.e("TTS", "Error in converting Text to Speech!");
+        }
     }
 
 
@@ -628,7 +703,7 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
             final RecognizeCommands.RecognitionResult result =
                     recognizeCommands.processLatestResults(outputScores[0], currentTime);
             lastProcessingTimeMs = new Date().getTime() - startTime;
-            
+
             System.out.println(result.foundCommand);
 
 //            if (!result.foundCommand.startsWith("_") && result.isNewCommand) {
