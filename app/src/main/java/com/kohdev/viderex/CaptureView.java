@@ -13,11 +13,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+/**
+ * This class will launch a camera image dispatch activity to take a picture
+ */
 public class CaptureView extends AppCompatActivity {
 
     ImageView imageView;
     Button btOpen;
 
+    /**
+     * OnCreate method to instantiate necessary assets.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +33,9 @@ public class CaptureView extends AppCompatActivity {
         imageView = findViewById(R.id.image_view);
         btOpen = findViewById(R.id.bt_open);
 
+        /**
+         * SetOnClick Listener method to open the camera intent activity
+         */
         btOpen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -36,6 +46,12 @@ public class CaptureView extends AppCompatActivity {
 
     }
 
+    /**
+     * OnActivity Implementation method that will capture the bitmap image and pass it to the imageView.
+     * @param requestCode - Request code that defines the intent
+     * @param resultCode - The response from intent
+     * @param data - The bundle data that is being passed.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
