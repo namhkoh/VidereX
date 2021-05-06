@@ -1,8 +1,5 @@
 package com.kohdev.viderex;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,22 +17,19 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.karlotoy.perfectune.instance.PerfectTune;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -51,6 +45,9 @@ import java.util.ArrayList;
 
 import static org.opencv.core.CvType.CV_8UC1;
 
+/**
+ * This class represents the main follow navigation feature.
+ */
 public class DebugViewActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener {
 
     private CameraBridgeViewBase mOpenCvCameraView;
@@ -75,7 +72,6 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
     Bitmap errorBit;
     boolean good_match;
     ArrayList<Uri> framePath;
-    String json;
     PerfectTune perfectTune = new PerfectTune();
 
     @Override
@@ -94,19 +90,6 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         pitchTv = findViewById(R.id.pitch);
         rollTv = findViewById(R.id.roll);
 
-        //json = (String) getIntent().getSerializableExtra("route_json");
-//        JSONObject obj = null;
-//        try {
-//            obj = new JSONObject(json);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            String routeName = obj.getString("name");
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println(json);
 
         mChart.getDescription().setText("Difference value");
         // enable description text
