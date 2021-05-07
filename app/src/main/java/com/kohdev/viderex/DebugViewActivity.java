@@ -46,7 +46,8 @@ import java.util.ArrayList;
 import static org.opencv.core.CvType.CV_8UC1;
 
 /**
- * This class represents the main follow navigation feature.
+ * This class represents the main follow navigation feature. It will display the live camera view, the goal image and difference image.
+ * The activity will also display the live charting information for the user.
  */
 public class DebugViewActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener {
 
@@ -167,6 +168,12 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
 
     }
 
+    /**
+     * THis function will take an array list of the image URIs as input and update the goal image as the user steps
+     * through the route.
+     * @param imageList
+     * @throws IOException
+     */
     public void updateGoal(ArrayList<Uri> imageList) throws IOException {
         try {
             if (good_match) {
@@ -182,6 +189,12 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         }
     }
 
+    /**
+     * Utility method that converts the uri to a bitmap image.
+     * @param selectedFileUri - URI imageFile
+     * @return image - Bitmap image
+     * @throws IOException
+     */
     private Bitmap uriToBitmap(Uri selectedFileUri) throws IOException {
         ParcelFileDescriptor parcelFileDescriptor = getContentResolver().openFileDescriptor(selectedFileUri, "r");
         FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
@@ -193,6 +206,10 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
     float[] mGravity;
     float[] mGeomagnetic;
 
+    /**
+     * OnSensorChanged method to handle the IMU sensor values.
+     * @param event
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
@@ -217,6 +234,9 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         }
     }
 
+    /**
+     * onResume method for controlling the sensor and camera intents.
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -230,6 +250,9 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         }
     }
 
+    /**
+     * onPause activity to control the Camera and tone generation library when application is paused.
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -240,6 +263,9 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         }
     }
 
+    /**
+     * onDestroy implementation method used for destroying the camera nad sensor intent activity.
+     */
     @Override
     protected void onDestroy() {
         // Destroying the camera.
@@ -266,6 +292,11 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
 
     }
 
+    /**
+     * OnCameraFrame method which will compute the difference value every 5 frames.
+     * @param inputFrame
+     * @return
+     */
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         //gray for gray scale
@@ -300,6 +331,11 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         return frame;
     }
 
+    /**
+     * Utility method that converts bitmap image to Mat for OpenCV
+     * @param image
+     * @return
+     */
     static private Mat bitmapToMat(Bitmap image) {
 
         Mat mat = null;
@@ -325,6 +361,14 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         return mat;
     }
 
+    /**
+     * This method will preprocess the data before feeding to the model
+     * The images are resized, normalized and then histogram equalized
+     * @param img - Incoming Mat image
+     * @param width - Image width
+     * @param height - Image height
+     * @return resizedImage
+     */
     private Mat prepare_data(Mat img, int width, int height) {
         // Resize image
         Mat resizeImage = new Mat();
@@ -337,6 +381,12 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         return resizeImage;
     }
 
+    /**
+     * Main method to compute the absolute difference between two images.
+     * @param current
+     * @param goal
+     * @return
+     */
     public Double computeAbsDiff(Mat current, Mat goal) {
         int range = 10;
         // Implementing a repeating pattern..
@@ -382,6 +432,11 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         return s.val[0];
     }
 
+    /**
+     * Utility method to convert the Mat image to bitmap image.
+     * @param orig_image - Original image
+     * @return Bitmap image
+     */
     private Bitmap matToBitmap(Mat orig_image) {
 
         // Clone image! Important otherwise colour conversion is applied to original...
@@ -403,6 +458,10 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         return ciBmp;
     }
 
+    /**
+     * This method will add the difference value from the computed difference of two images for the charting solution.
+     * @param difference - Image difference value.
+     */
     private void addEntry(Float difference) {
 
         LineData data = mChart.getData();
@@ -435,6 +494,10 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         }
     }
 
+    /**
+     * Line dataset method that will create set for the charting solution.
+     * @return set
+     */
     private LineDataSet createSet() {
 
         LineDataSet set = new LineDataSet(null, "Dynamic Data");
@@ -449,6 +512,9 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         return set;
     }
 
+    /**
+     * Runner method for the mChart library solution.
+     */
     private void feedMultiple() {
 
         if (thread != null) {
@@ -474,6 +540,11 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         thread.start();
     }
 
+    /**
+     * This method will set the tune frequency to signal the user about the match quality via tone generation.
+     * @param difference
+     * @return
+     */
     private int setTune(double difference) {
         int tuneValue = 0;
         if (difference >= 16000) {
