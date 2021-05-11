@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -71,6 +72,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
     int counter;
     int threshold = 7000;
     Bitmap errorBit;
+    private TextToSpeech textToSpeech;
     boolean good_match;
     ArrayList<Uri> framePath;
     PerfectTune perfectTune = new PerfectTune();
@@ -171,6 +173,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
     /**
      * THis function will take an array list of the image URIs as input and update the goal image as the user steps
      * through the route.
+     *
      * @param imageList
      * @throws IOException
      */
@@ -191,6 +194,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
 
     /**
      * Utility method that converts the uri to a bitmap image.
+     *
      * @param selectedFileUri - URI imageFile
      * @return image - Bitmap image
      * @throws IOException
@@ -208,6 +212,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
 
     /**
      * OnSensorChanged method to handle the IMU sensor values.
+     *
      * @param event
      */
     @Override
@@ -294,6 +299,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
 
     /**
      * OnCameraFrame method which will compute the difference value every 5 frames.
+     *
      * @param inputFrame
      * @return
      */
@@ -332,7 +338,21 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
     }
 
     /**
+     * A voice reads the text given in the method.
+     *
+     * @param selectedText The String text that is read.
+     */
+    private void initTTS(String selectedText) {
+        //textToSpeech.setSpeechRate(testingVal);
+        int speechStatus = textToSpeech.speak(selectedText, TextToSpeech.QUEUE_ADD, null, "1");
+        if (speechStatus == TextToSpeech.ERROR) {
+            Log.e("TTS", "Error in converting Text to Speech!");
+        }
+    }
+
+    /**
      * Utility method that converts bitmap image to Mat for OpenCV
+     *
      * @param image
      * @return
      */
@@ -364,8 +384,9 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
     /**
      * This method will preprocess the data before feeding to the model
      * The images are resized, normalized and then histogram equalized
-     * @param img - Incoming Mat image
-     * @param width - Image width
+     *
+     * @param img    - Incoming Mat image
+     * @param width  - Image width
      * @param height - Image height
      * @return resizedImage
      */
@@ -383,6 +404,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
 
     /**
      * Main method to compute the absolute difference between two images.
+     *
      * @param current
      * @param goal
      * @return
@@ -434,6 +456,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
 
     /**
      * Utility method to convert the Mat image to bitmap image.
+     *
      * @param orig_image - Original image
      * @return Bitmap image
      */
@@ -460,6 +483,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
 
     /**
      * This method will add the difference value from the computed difference of two images for the charting solution.
+     *
      * @param difference - Image difference value.
      */
     private void addEntry(Float difference) {
@@ -496,6 +520,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
 
     /**
      * Line dataset method that will create set for the charting solution.
+     *
      * @return set
      */
     private LineDataSet createSet() {
@@ -542,6 +567,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
 
     /**
      * This method will set the tune frequency to signal the user about the match quality via tone generation.
+     *
      * @param difference
      * @return
      */

@@ -434,7 +434,10 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         //        startActivity(intent);
     }
 
-
+    /**
+     * Utility method to convert the URI image path to Bitmap image.
+     * @param selectedFileUri
+     */
     private void uriToBitmap(Uri selectedFileUri) {
         try {
             ParcelFileDescriptor parcelFileDescriptor = getContentResolver().openFileDescriptor(selectedFileUri, "r");
@@ -447,7 +450,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-
+    /**
+     * This method will launch the image capture intent.
+     */
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -471,6 +476,11 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    /**
+     * Method to create the image file.
+     * @return
+     * @throws IOException
+     */
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -498,6 +508,12 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         return image;
     }
 
+    /**
+     * OnActivity result method
+     * @param requestCode - requestCode used for defining the action
+     * @param resultCode - the result code of the action
+     * @param intent - Android intent object
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
@@ -574,6 +590,12 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    /**
+     * Method that checks for android permission results
+     * @param requestCode - Request code
+     * @param permissions - Permission
+     * @param grantResults - the results from the grant
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -593,6 +615,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    /**
+     * Method to request the microphone.
+     */
     private void requestMicrophonePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(
@@ -604,6 +629,10 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     float[] mGravity;
     float[] mGeomagnetic;
 
+    /**
+     * onSensorChanged method
+     * @param event - event type
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
@@ -658,6 +687,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
+    /**
+     * OnListen recognize method.
+     */
     private void recognize() {
 
         Log.v(LOG_TAG, "Start recognition");
@@ -742,6 +774,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
+    /**
+     * Method that starts recording the audio.
+     */
     public synchronized void startRecording() {
         if (recordingThread != null) {
             return;
@@ -758,6 +793,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         recordingThread.start();
     }
 
+    /**
+     * Method to execute to record the user's audio input.
+     */
     private void record() {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
 
@@ -811,6 +849,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         record.release();
     }
 
+    /**
+     * TF method to start recognition.
+     */
     public synchronized void startRecognition() {
         if (recognitionThread != null) {
             return;
@@ -827,6 +868,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         recognitionThread.start();
     }
 
+    /**
+     * Stop Recognition method.
+     */
     public synchronized void stopRecognition() {
         if (recognitionThread == null) {
             return;
