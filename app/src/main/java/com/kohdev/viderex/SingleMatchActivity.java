@@ -548,6 +548,11 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         return goalImage;
     }
 
+    /**
+     * Mat to bitmap method
+     * @param orig_image - Original image
+     * @return Bitmap image
+     */
     private Bitmap matToBitmap(Mat orig_image) {
 
         // Clone image! Important otherwise colour conversion is applied to original...
@@ -583,6 +588,10 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         }
     }
 
+    /**
+     * Add entry method for the chart
+     * @param difference - the difference value
+     */
     private void addEntry(Float difference) {
 
         LineData data = mChart.getData();
@@ -615,6 +624,9 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         }
     }
 
+    /**
+     * Method for the create set.
+     */
     private LineDataSet createSet() {
 
         LineDataSet set = new LineDataSet(null, "Dynamic Data");
@@ -629,6 +641,9 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         return set;
     }
 
+    /**
+     * Chart utility method to feed.
+     */
     private void feedMultiple() {
 
         if (thread != null) {

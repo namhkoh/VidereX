@@ -30,6 +30,10 @@ public class Snapshot {
     private Uri preprocessed_img_uri;
     private double azimuth, pitch, roll;
 
+    /**
+     * Main constructor of snapshot
+     * @param imageUri
+     */
     public Snapshot(Uri imageUri) {
         Log.e("imageUri single", String.valueOf(imageUri));
         this.preprocessed_img_uri = imageUri;
@@ -78,6 +82,10 @@ public class Snapshot {
         this.preprocessed_img = prep_img(frame, 100, 50);
     }
 
+    /**
+     * Get the preprocessed image
+     * @return
+     */
     public Mat getPreprocessed_img() {
         return this.preprocessed_img;
     }
@@ -90,6 +98,12 @@ public class Snapshot {
         return matToBitmap(this.preprocessed_img);
     }
 
+    /**
+     * Uri to bitmap image
+     * @param context
+     * @param imgPath
+     * @return
+     */
     public static Bitmap UriToBitmap(Context context, Uri imgPath) {
         Bitmap image = null;
         try {
@@ -104,12 +118,23 @@ public class Snapshot {
     }
 
 
+    /**
+     * Uri to mat image
+     * @param context
+     * @param imageUri
+     * @return
+     */
     static private Mat uriToMat(Context context, Uri imageUri) {
 
         return bitmapToMat(UriToBitmap(context, imageUri));
     }
 
 
+    /**
+     * Bitmap to mat image function.
+     * @param image
+     * @return
+     */
     static private Mat bitmapToMat(Bitmap image) {
 
         Mat mat = null;
@@ -135,6 +160,11 @@ public class Snapshot {
         return mat;
     }
 
+    /**
+     * Mat to bitmap conversion method
+     * @param orig_image
+     * @return
+     */
     private Bitmap matToBitmap(Mat orig_image) {
 
         // Clone image! Important otherwise colour conversion is applied to original...

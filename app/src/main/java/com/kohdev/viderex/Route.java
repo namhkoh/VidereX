@@ -34,18 +34,33 @@ public class Route {
         this.snapshots = snapshots;
     }
 
+    /**
+     * Sets name to the route.
+     * @param name String name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Gets the name of the route.
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Utility method to get snapshots
+     * @return snapshots
+     */
     public Set<Snapshot> getSnapshots() {
         return this.snapshots;
     }
 
+    /**
+     * Adds new snapshot.
+     * @param imageUri - Image uri
+     */
     public void addNewSnapshot(Uri imageUri) {
         Log.e("snapshot taken ", String.valueOf(imageUri));
         snapshots.add(new Snapshot(imageUri));
@@ -84,6 +99,12 @@ public class Route {
         return bestMatch;
     }
 
+    /**
+     * Method to compute absolute difference.
+     * @param current - Current Mat image
+     * @param goal - Goal image
+     * @return difference value.
+     */
     public Double computeAbsDiff(Mat current, Mat goal) {
         int range = 10;
         int w = current.width();
