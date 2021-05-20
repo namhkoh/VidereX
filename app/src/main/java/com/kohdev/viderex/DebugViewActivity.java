@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -167,6 +168,28 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
         Mat goalTmp = bitmapToMat(goalImage);
         resizedImage = new Mat();
         resizedImage = prepare_data(goalTmp, 100, 50);
+
+        textToSpeech = new TextToSpeech(getApplicationContext(), status -> {
+
+        });
+
+        //Results of pressing the speech button.
+        textToSpeech.setOnUtteranceProgressListener(
+                new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String utteranceId) {
+                    }
+
+                    @Override
+                    public void onDone(String utteranceId) {
+
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+
+                    }
+                });
 
     }
 
@@ -326,6 +349,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
                         plotData = false;
                     }
                     if (counter == framePath.size()) {
+                        initTTS("You have arrived.");
                         System.out.println("end of route");
                     }
                 }
