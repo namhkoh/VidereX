@@ -141,9 +141,10 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
         sendFrames.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), DebugViewActivity.class);
+                //Intent intent = new Intent(getApplicationContext(), DebugViewActivity.class);
+                Intent intent = new Intent(getApplicationContext(), AlternativeComputation.class);
                 intent.putExtra("route_json", json);
-                intent.putExtra("image_path", frameListPath);
+                //intent.putExtra("image_path", frameListPath);
                 startActivity(intent);
             }
         });

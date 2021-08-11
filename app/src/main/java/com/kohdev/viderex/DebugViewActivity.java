@@ -194,7 +194,7 @@ public class DebugViewActivity extends AppCompatActivity implements CameraBridge
     }
 
     /**
-     * THis function will take an array list of the image URIs as input and update the goal image as the user steps
+     * This function will take an array list of the image URIs as input and update the goal image as the user steps
      * through the route.
      *
      * @param imageList

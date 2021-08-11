@@ -6,7 +6,6 @@
         <package android:name="com.google.android.googlequicksearchbox" />
     </queries>
 
-
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -34,8 +33,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".RouteListViewActivity"></activity>
-        <activity android:name=".DebugViewActivity" />
+        <activity
+            android:name=".AlternativeComputation"
+            android:screenOrientation="landscape" />
+        <activity android:name=".RouteListViewActivity" />
+        <activity
+            android:name=".DebugViewActivity"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".VideoRecordRoute"
             android:screenOrientation="landscape">

@@ -48,6 +48,7 @@
     <string name="VideoView">Video taken</string>
     <string name="EnterRouteName">Enter RouteName</string>
     <string name="pogBar">Progress bar</string>
+    <string name="bestmatch">bestMatch</string>
 
 
 </resources>

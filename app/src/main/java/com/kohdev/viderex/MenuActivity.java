@@ -403,7 +403,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
      * This method will launch the single match method.
      */
     private void launchSingleMatch() {
-        dispatchTakePictureIntent();
+        //dispatchTakePictureIntent();
+        Intent intent = new Intent(this, AlternativeComputation.class);
+        startActivity(intent);
     }
 
     /**
@@ -436,6 +438,7 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
 
     /**
      * Utility method to convert the URI image path to Bitmap image.
+     *
      * @param selectedFileUri
      */
     private void uriToBitmap(Uri selectedFileUri) {
@@ -478,6 +481,7 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
 
     /**
      * Method to create the image file.
+     *
      * @return
      * @throws IOException
      */
@@ -510,9 +514,10 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
 
     /**
      * OnActivity result method
+     *
      * @param requestCode - requestCode used for defining the action
-     * @param resultCode - the result code of the action
-     * @param intent - Android intent object
+     * @param resultCode  - the result code of the action
+     * @param intent      - Android intent object
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -592,8 +597,9 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
 
     /**
      * Method that checks for android permission results
-     * @param requestCode - Request code
-     * @param permissions - Permission
+     *
+     * @param requestCode  - Request code
+     * @param permissions  - Permission
      * @param grantResults - the results from the grant
      */
     @Override
@@ -631,6 +637,7 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
 
     /**
      * onSensorChanged method
+     *
      * @param event - event type
      */
     @Override
