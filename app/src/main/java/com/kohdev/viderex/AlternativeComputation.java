@@ -59,8 +59,27 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
     private TextToSpeech textToSpeech;
     boolean good_match;
     //ArrayList<Uri> framePath;
-    ArrayList<String> framePath = new ArrayList<String>(Arrays.asList("file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656187625_test1_7431171927740614976.jpg", "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656188300_test1_5094989600308804366.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656189009_test1_6977200535688774546.jpg", "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656189702_test1_2665624534115796662.jpg"));
+//    ArrayList<String> framePath = new ArrayList<String>(Arrays.asList("file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656187625_test1_7431171927740614976.jpg", "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656188300_test1_5094989600308804366.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656189009_test1_6977200535688774546.jpg", "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656189702_test1_2665624534115796662.jpg"));
+
+    ArrayList<String> framePath = new ArrayList<String>(Arrays.asList("file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103177410_table_4455769652820168832.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103174408_table_7847894203507333637.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103175153_table_4526138246348440732.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103175888_table_424657081078961058.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103176618_table_3783842397861269742.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103178157_table_3793754083131125710.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103178901_table_8397094335423158983.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103179614_table_1100287399432042272.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103180297_table_2681245729131468553.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103180954_table_2601496536046572860.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103181599_table_8956216974277843310.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103182243_table_999459685166328274.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103182907_table_2936559660522759923.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103183619_table_2668138700630887461.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103184308_table_524995832434001519.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103185014_table_1578785801739261834.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103185767_table_7385242400029980649.jpg",
+            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103186437_table_575752531978606963.jpg"));
 
     Double max = 1000000.0;
     Double min = -1000000.0;
@@ -166,7 +185,7 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
         //gray for gray scale
         Mat frame = inputFrame.rgba();
         Mat resizedFrame = prepare_data(frame, 100, 50);
-        if (frameCount == 5) {
+        if (frameCount == 3) {
             for (String img : framePath) {
                 try {
                     System.out.println("PROCESSING .... :" + img);

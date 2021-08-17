@@ -33,6 +33,7 @@
 //import java.io.FileDescriptor;
 //import java.io.IOException;
 //import java.util.ArrayList;
+//import java.util.Arrays;
 //
 //import static org.opencv.core.CvType.CV_8UC1;
 //
@@ -49,13 +50,39 @@
 //
 //    ImageView storedView;
 //    ImageView differenceView;
+//    ImageView bestMatchView;
 //    int frameCount;
 //    int counter;
 //    int threshold = 7000;
 //    Bitmap errorBit;
+//    Bitmap memoryBit;
 //    private TextToSpeech textToSpeech;
 //    boolean good_match;
-//    ArrayList<Uri> framePath;
+//    //ArrayList<Uri> framePath;
+////    ArrayList<String> framePath = new ArrayList<String>(Arrays.asList("file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656187625_test1_7431171927740614976.jpg", "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656188300_test1_5094989600308804366.jpg",
+////            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656189009_test1_6977200535688774546.jpg", "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1628656189702_test1_2665624534115796662.jpg"));
+//
+//    ArrayList<String> framePath = new ArrayList<String>(Arrays.asList("file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103177410_table_4455769652820168832.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103174408_table_7847894203507333637.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103175153_table_4526138246348440732.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103175888_table_424657081078961058.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103176618_table_3783842397861269742.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103178157_table_3793754083131125710.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103178901_table_8397094335423158983.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103179614_table_1100287399432042272.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103180297_table_2681245729131468553.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103180954_table_2601496536046572860.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103181599_table_8956216974277843310.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103182243_table_999459685166328274.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103182907_table_2936559660522759923.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103183619_table_2668138700630887461.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103184308_table_524995832434001519.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103185014_table_1578785801739261834.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103185767_table_7385242400029980649.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103186437_table_575752531978606963.jpg"));
+//
+//    Double max = 1000000.0;
+//    Double min = -1000000.0;
 //
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
@@ -65,49 +92,62 @@
 //        mOpenCvCameraView = findViewById(R.id.OpenCVCamera);
 //        mOpenCvCameraView.setCvCameraViewListener(this);
 //
-//        storedView = (ImageView) findViewById(R.id.StoredView);
-//        differenceView = (ImageView) findViewById(R.id.DifferenceView);
+////        storedView = (ImageView) findViewById(R.id.StoredView);
+////        differenceView = (ImageView) findViewById(R.id.DifferenceView);
+//        bestMatchView = (ImageView) findViewById(R.id.bestMatch);
+//
 //
 //        diffVal = (TextView) findViewById(R.id.differenceValue);
 //        frameCount = 0;
 //        counter = 0;
 //
-//        framePath = (ArrayList<Uri>) getIntent().getSerializableExtra("image_path");
+//        //framePath = (ArrayList<Uri>) getIntent().getSerializableExtra("image_path");
+//
 //        System.out.println(framePath);
 //
-//        try {
-//            goalImage = uriToBitmap(framePath.get(counter));
-//            storedView.setImageBitmap(goalImage);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        Mat goalTmp = bitmapToMat(goalImage);
-//        resizedImage = new Mat();
-//        resizedImage = prepare_data(goalTmp, 100, 50);
+////        try {
+////            goalImage = uriToBitmap(Uri.parse(framePath.get(counter)));
+//////            storedView.setImageBitmap(goalImage);
+////        } catch (IOException e) {
+////            e.printStackTrace();
+////        }
+////        Mat goalTmp = bitmapToMat(goalImage);
+////        resizedImage = new Mat();
+////        resizedImage = prepare_data(goalTmp, 100, 50);
 //
 //    }
+//
+////    /**
+////     * This function will take an array list of the image URIs as input and update the goal image as the user steps
+////     * through the route.
+////     *
+////     * @param imageList
+////     * @throws IOException
+////     */
+////    public void updateGoal(ArrayList<Uri> imageList) throws IOException {
+////        try {
+////            if (good_match) {
+////                counter++;
+////                goalImage = uriToBitmap(imageList.get(counter));
+////                storedView.setImageBitmap(goalImage);
+////                Mat goalTmp = bitmapToMat(goalImage);
+////                resizedImage = new Mat();
+////                resizedImage = prepare_data(goalTmp, 100, 50);
+////            }
+////        } catch (IndexOutOfBoundsException e) {
+////            Log.e("ERROR", String.valueOf(e));
+////        }
+////    }
 //
 //    /**
-//     * This function will take an array list of the image URIs as input and update the goal image as the user steps
-//     * through the route.
-//     *
-//     * @param imageList
-//     * @throws IOException
+//     * This method will take the frame path arraylist and compute the difference between the current view across the entire list
+//     * It will then return the best matching image
 //     */
-//    public void updateGoal(ArrayList<Uri> imageList) throws IOException {
-//        try {
-//            if (good_match) {
-//                counter++;
-//                goalImage = uriToBitmap(imageList.get(counter));
-//                storedView.setImageBitmap(goalImage);
-//                Mat goalTmp = bitmapToMat(goalImage);
-//                resizedImage = new Mat();
-//                resizedImage = prepare_data(goalTmp, 100, 50);
-//            }
-//        } catch (IndexOutOfBoundsException e) {
-//            Log.e("ERROR", String.valueOf(e));
-//        }
-//    }
+////    public void returnBestMatch(ArrayList<Uri> imageList) throws IOException {
+////        for (image : imageList) {
+////            computeDifference()
+////        }
+////    }
 //
 //    /**
 //     * Utility method that converts the uri to a bitmap image.
@@ -145,24 +185,24 @@
 //        //gray for gray scale
 //        Mat frame = inputFrame.rgba();
 //        Mat resizedFrame = prepare_data(frame, 100, 50);
-//        if (frameCount == 5) {
-//            final double diff = computeAbsDiff(resizedImage, resizedFrame);
-//            try {
-//                updateGoal(framePath);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            Log.e("diff ", String.valueOf(diff));
-//            runOnUiThread(new Runnable() {
-//                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-//                @Override
-//                public void run() {
-//                    diffVal.setText("difference: " + diff);
-//                    if (counter == framePath.size()) {
-//                        System.out.println("end of route");
-//                    }
+//        if (frameCount == 3) {
+//            for (String img : framePath) {
+//                try {
+//                    System.out.println("PROCESSING .... :" + img);
+//                    goalImage = uriToBitmap(Uri.parse(img));
+//                } catch (IOException e) {
+//                    e.printStackTrace();
 //                }
-//            });
+//                Mat goalTmp = bitmapToMat(goalImage);
+//                resizedImage = new Mat();
+//                resizedImage = prepare_data(goalTmp, 100, 50);
+//                final double diff = computeDifference(resizedImage, resizedFrame);
+//                Log.e("diff ", String.valueOf(diff));
+//                runOnUiThread(() -> {
+//                    bestMatchView.setImageBitmap(goalImage);
+//                    diffVal.setText("difference: " + diff);
+//                });
+//            }
 //            frameCount = 0;
 //        } else {
 //            frameCount++;
@@ -205,6 +245,44 @@
 //        if (mOpenCvCameraView != null) {
 //            mOpenCvCameraView.disableView();
 //        }
+//    }
+//
+//
+//    public Double computeDifference(Mat currentImage, Mat memoryImage) {
+//        int w = currentImage.width();
+//        int h = currentImage.height();
+//        Mat error = Mat.zeros(w, h, CV_8UC1);
+//        Mat error_image = Mat.zeros(w, h, CV_8UC1);
+//        Mat current_norm = new Mat();
+//        Mat goal_norm = new Mat();
+//        Core.normalize(currentImage, current_norm, 255, Core.NORM_L2);
+//        Core.normalize(memoryImage, goal_norm, 255, Core.NORM_L2);
+//        Core.absdiff(current_norm, goal_norm, error);
+//
+//        Core.absdiff(currentImage, memoryImage, error_image);
+//        //Convert error to bitmap
+//        if (frameCount == 5) {
+//            errorBit = matToBitmap(error_image);
+//            memoryBit = matToBitmap(memoryImage);
+//            System.out.println(errorBit.getHeight());
+//            System.out.println(errorBit.getWidth());
+////            runOnUiThread(new Runnable() {
+////                @Override
+////                public void run() {
+////                    bestMatchView.setImageBitmap(memoryBit);
+////                }
+////            });
+//        }
+//        Scalar s = Core.sumElems(error);
+//        if (s.val[0] <= threshold) {
+//            diffVal.setTextColor(Color.GREEN);
+//            good_match = true;
+//        } else {
+//
+//            good_match = false;
+//        }
+//
+//        return s.val[0];
 //    }
 //
 //    /**
@@ -258,54 +336,55 @@
 //        Imgproc.equalizeHist(resizeImage, resizeImage);
 //        return resizeImage;
 //    }
-//
-//    /**
-//     * Main method to compute the absolute difference between two images.
-//     *
-//     * @param current
-//     * @param goal
-//     * @return
-//     */
-//    public Double computeAbsDiff(Mat current, Mat goal) {
-//        int range = 10;
-//        // Implementing a repeating pattern..
-//        long[] pattern = {100, 100, 100, 100, 100, 100};
-//        int w = current.width();
-//        int h = current.height();
-//        Mat error = Mat.zeros(w, h, CV_8UC1);
-//        Mat error_image = Mat.zeros(w, h, CV_8UC1);
-//        Mat current_norm = new Mat();
-//        Mat goal_norm = new Mat();
-//        Core.normalize(current, current_norm, 255, Core.NORM_L2);
-//        Core.normalize(goal, goal_norm, 255, Core.NORM_L2);
-//        Core.absdiff(current_norm, goal_norm, error);
-//
-//        Core.absdiff(current, goal, error_image);
-//
-//        //Convert error to bitmap
-//        if (frameCount == 5) {
-//            errorBit = matToBitmap(error_image);
-//            System.out.println(errorBit.getHeight());
-//            System.out.println(errorBit.getWidth());
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    differenceView.setImageBitmap(errorBit);
-//                }
-//            });
-//        }
-//
-//        Scalar s = Core.sumElems(error);
-//        if (s.val[0] <= threshold) {
-//            diffVal.setTextColor(Color.GREEN);
-//            good_match = true;
-//        } else {
-//            diffVal.setTextColor(Color.RED);
-//            good_match = false;
-//        }
-//
-//        return s.val[0];
-//    }
+////
+////    /**
+////     * Main method to compute the absolute difference between two images.
+////     *
+////     * @param current
+////     * @param goal
+////     * @return
+////     */
+////    public Double computeAbsDiff(Mat current, Mat goal) {
+////        int range = 10;
+////        // Implementing a repeating pattern..
+////        long[] pattern = {100, 100, 100, 100, 100, 100};
+////        int w = current.width();
+////        int h = current.height();
+////        Mat error = Mat.zeros(w, h, CV_8UC1);
+////        Mat error_image = Mat.zeros(w, h, CV_8UC1);
+////        Mat current_norm = new Mat();
+////        Mat goal_norm = new Mat();
+////        Core.normalize(current, current_norm, 255, Core.NORM_L2);
+////        Core.normalize(goal, goal_norm, 255, Core.NORM_L2);
+////        Core.absdiff(current_norm, goal_norm, error);
+////
+////        Core.absdiff(current, goal, error_image);
+////
+////        //Convert error to bitmap
+////        if (frameCount == 5) {
+////            errorBit = matToBitmap(error_image);
+////            System.out.println(errorBit.getHeight());
+////            System.out.println(errorBit.getWidth());
+////            runOnUiThread(new Runnable() {
+////                @Override
+////                public void run() {
+////                    differenceView.setImageBitmap(errorBit);
+////                }
+////            });
+////        }
+////
+////        Scalar s = Core.sumElems(error);
+////        if (s.val[0] <= threshold) {
+////            diffVal.setTextColor(Color.GREEN);
+////            good_match = true;
+////        } else {
+////            diffVal.setTextColor(Color.RED);
+////            good_match = false;
+////        }
+////
+////        return s.val[0];
+////    }
+////
 //
 //    /**
 //     * Utility method to convert the Mat image to bitmap image.
