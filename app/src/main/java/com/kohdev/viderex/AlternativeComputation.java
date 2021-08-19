@@ -54,6 +54,7 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
     int frameCount;
     int counter;
     int threshold = 7000;
+    int ind;
     Bitmap errorBit;
     Bitmap memoryBit;
     boolean good_match;
@@ -124,9 +125,10 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         //gray for gray scale
         Double max = 100000.0;
+
         Mat frame = inputFrame.rgba();
         Mat resizedFrame = prepare_data(frame, 100, 50);
-        if (frameCount == 20) {
+        if (frameCount == 5) {
             for (String img : framePath) {
                 try {
                     Bitmap goalImage = uriToBitmap(Uri.parse(img));
@@ -136,12 +138,13 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
                     if (diff < max) {
                         max = diff;
                         bestMatchImage = goalImage;
+                        Log.e("best match at index: ", String.valueOf(framePath.indexOf(img)));
+                        ind = framePath.indexOf(img);
                     }
                     runOnUiThread(() -> {
                         best_ting.setImageBitmap(bestMatchImage);
                         bestMatchView.setImageBitmap(goalImage);
-                        bestMatchIndex.setText(String.valueOf(framePath.indexOf(img)));
-                        Log.e("best match at index: ", String.valueOf(framePath.indexOf(img)));
+                        bestMatchIndex.setText(String.valueOf(ind));
                         diffVal.setText("difference: " + diff);
                     });
                 } catch (IOException e) {
@@ -210,7 +213,7 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
 
         Core.absdiff(currentImage, memoryImage, error_image);
         //Convert error to bitmap
-        if (frameCount == 20) {
+        if (frameCount == 5) {
             errorBit = matToBitmap(error_image);
             System.out.println(errorBit.getHeight());
             System.out.println(errorBit.getWidth());
