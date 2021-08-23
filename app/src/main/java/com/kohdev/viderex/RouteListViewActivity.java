@@ -353,7 +353,8 @@ public class RouteListViewActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 System.out.println("intermeditate");
-                                Intent intent = new Intent(getApplicationContext(), DebugViewActivity.class);
+                                //Intent intent = new Intent(getApplicationContext(), DebugViewActivity.class);
+                                Intent intent = new Intent(getApplicationContext(), AlternativeComputation.class);
                                 intent.putExtra("route_json", json);
                                 intent.putExtra("image_path", image_path);
                                 startActivity(intent);

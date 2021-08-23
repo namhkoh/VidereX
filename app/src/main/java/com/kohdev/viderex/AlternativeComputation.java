@@ -59,24 +59,25 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
     Bitmap memoryBit;
     boolean good_match;
 
-    ArrayList<String> framePath = new ArrayList<String>(Arrays.asList("file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103177410_table_4455769652820168832.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103174408_table_7847894203507333637.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103175153_table_4526138246348440732.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103175888_table_424657081078961058.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103176618_table_3783842397861269742.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103178157_table_3793754083131125710.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103178901_table_8397094335423158983.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103179614_table_1100287399432042272.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103180297_table_2681245729131468553.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103180954_table_2601496536046572860.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103181599_table_8956216974277843310.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103182243_table_999459685166328274.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103182907_table_2936559660522759923.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103183619_table_2668138700630887461.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103184308_table_524995832434001519.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103185014_table_1578785801739261834.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103185767_table_7385242400029980649.jpg",
-            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103186437_table_575752531978606963.jpg"));
+    //    ArrayList<String> framePath = new ArrayList<String>(Arrays.asList("file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103177410_table_4455769652820168832.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103174408_table_7847894203507333637.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103175153_table_4526138246348440732.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103175888_table_424657081078961058.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103176618_table_3783842397861269742.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103178157_table_3793754083131125710.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103178901_table_8397094335423158983.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103179614_table_1100287399432042272.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103180297_table_2681245729131468553.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103180954_table_2601496536046572860.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103181599_table_8956216974277843310.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103182243_table_999459685166328274.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103182907_table_2936559660522759923.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103183619_table_2668138700630887461.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103184308_table_524995832434001519.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103185014_table_1578785801739261834.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103185767_table_7385242400029980649.jpg",
+//            "file:///storage/emulated/0/Android/data/com.kohdev.viderex/files/Movies/Frames/FRAME_1629103186437_table_575752531978606963.jpg"));
+    ArrayList<Uri> framePath;
 
 
     Double min = -1000000.0;
@@ -99,7 +100,7 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
         frameCount = 0;
         counter = 0;
 
-
+        framePath = (ArrayList<Uri>) getIntent().getSerializableExtra("image_path");
         System.out.println(framePath);
 
     }
@@ -124,21 +125,22 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         //gray for gray scale
-        Double max = 100000.0;
+        Double max = Double.MAX_VALUE;
 
         Mat frame = inputFrame.rgba();
         Mat resizedFrame = prepare_data(frame, 100, 50);
-        if (frameCount == 5) {
-            for (String img : framePath) {
+
+        if (frameCount == 7) {
+            for (Uri img : framePath) {
                 try {
-                    Bitmap goalImage = uriToBitmap(Uri.parse(img));
+                    Bitmap goalImage = uriToBitmap(img);
                     Mat goalTmp = bitmapToMat(goalImage);
                     Mat resizedImage = prepare_data(goalTmp, 100, 50);
                     final double diff = computeDifference(resizedImage, resizedFrame);
                     if (diff < max) {
                         max = diff;
+                        Log.e("max value: ", String.valueOf(max));
                         bestMatchImage = goalImage;
-                        Log.e("best match at index: ", String.valueOf(framePath.indexOf(img)));
                         ind = framePath.indexOf(img);
                     }
                     runOnUiThread(() -> {
@@ -213,10 +215,8 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
 
         Core.absdiff(currentImage, memoryImage, error_image);
         //Convert error to bitmap
-        if (frameCount == 5) {
+        if (frameCount == 7) {
             errorBit = matToBitmap(error_image);
-            System.out.println(errorBit.getHeight());
-            System.out.println(errorBit.getWidth());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -225,6 +225,7 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
             });
         }
         Scalar s = Core.sumElems(error);
+
         if (s.val[0] <= threshold) {
             diffVal.setTextColor(Color.GREEN);
             good_match = true;
@@ -232,7 +233,6 @@ public class AlternativeComputation extends AppCompatActivity implements CameraB
             diffVal.setTextColor(Color.RED);
             good_match = false;
         }
-
         return s.val[0];
     }
 
