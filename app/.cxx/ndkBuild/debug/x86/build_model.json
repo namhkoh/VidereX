@@ -1,10 +1,5 @@
 {
   "abi": "X86",
-  "abiPlatformVersion": 21,
-  "buildSettings": {
-    "environmentVariables": []
-  },
-  "cxxBuildFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/x86",
   "info": {
     "abi": "X86",
     "bitness": 32,
@@ -12,29 +7,68 @@
     "default": true
   },
   "originalCxxBuildFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/x86",
+  "cxxBuildFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/x86",
+  "abiPlatformVersion": 21,
   "variant": {
     "buildSystemArgumentList": [],
-    "buildTargetSet": [],
     "cFlagsList": [],
-    "cmakeSettingsConfiguration": "android-gradle-plugin-predetermined-name",
     "cppFlagsList": [],
+    "variantName": "debug",
+    "objFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/build/intermediates/ndkBuild/debug/obj/local",
+    "soFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/build/intermediates/ndkBuild/debug/lib",
     "isDebuggableEnabled": true,
+    "validAbiList": [
+      "X86"
+    ],
+    "buildTargetSet": [],
+    "implicitBuildTargetSet": [],
+    "cmakeSettingsConfiguration": "android-gradle-plugin-predetermined-name",
     "module": {
-      "buildSystem": "NDK_BUILD",
-      "cmakeToolchainFile": "/Users/lucaskoh/Library/Android/sdk/ndk/21.0.6113669/build/cmake/android.toolchain.cmake",
       "cxxFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx",
-      "gradleModulePathName": ":app",
+      "splitsAbiFilterSet": [],
       "intermediatesFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/build/intermediates",
-      "makeFile": "/Users/lucaskoh/Documents/Github/VidereX/OpenCV-android-sdk/sdk/native/jni/OpenCV-arm64-v8a.mk",
-      "moduleBuildFile": "/Users/lucaskoh/Documents/GitHub/VidereX/app/build.gradle",
+      "gradleModulePathName": ":app",
       "moduleRootFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app",
+      "moduleBuildFile": "/Users/lucaskoh/Documents/GitHub/VidereX/app/build.gradle",
+      "makeFile": "/Users/lucaskoh/Documents/Github/VidereX/OpenCV-android-sdk/sdk/native/jni/OpenCV-arm64-v8a.mk",
+      "buildSystem": "NDK_BUILD",
+      "ndkFolder": "/Users/lucaskoh/Library/Android/sdk/ndk/21.4.7075529",
+      "ndkVersion": "21.4.7075529",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
       "ndkDefaultAbiList": [
         "ARMEABI_V7A",
         "ARM64_V8A",
         "X86",
         "X86_64"
       ],
-      "ndkFolder": "/Users/lucaskoh/Library/Android/sdk/ndk/21.0.6113669",
+      "ndkDefaultStl": "SYSTEM",
+      "ndkMetaPlatforms": {
+        "min": 16,
+        "max": 30,
+        "aliases": {
+          "20": 19,
+          "25": 24,
+          "J": 16,
+          "J-MR1": 17,
+          "J-MR2": 18,
+          "K": 19,
+          "L": 21,
+          "L-MR1": 22,
+          "M": 23,
+          "N": 24,
+          "N-MR1": 24,
+          "O": 26,
+          "O-MR1": 27,
+          "P": 28,
+          "Q": 29,
+          "R": 30
+        }
+      },
       "ndkMetaAbiList": [
         {
           "abi": "ARMEABI_V7A",
@@ -61,68 +95,37 @@
           "default": true
         }
       ],
-      "ndkMetaPlatforms": {
-        "min": 16,
-        "max": 29,
-        "aliases": {
-          "20": 19,
-          "25": 24,
-          "J": 16,
-          "J-MR1": 17,
-          "J-MR2": 18,
-          "K": 19,
-          "L": 21,
-          "L-MR1": 22,
-          "M": 23,
-          "N": 24,
-          "N-MR1": 24,
-          "O": 26,
-          "O-MR1": 27,
-          "P": 28,
-          "Q": 29
-        }
-      },
-      "ndkSupportedAbiList": [
-        "ARMEABI_V7A",
-        "ARM64_V8A",
-        "X86",
-        "X86_64"
-      ],
-      "ndkDefaultStl": "SYSTEM",
-      "ndkVersion": "21.0.6113669",
-      "project": {
-        "compilerSettingsCacheFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/.cxx",
-        "cxxFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/.cxx",
-        "isBuildOnlyTargetAbiEnabled": true,
-        "isCmakeBuildCohabitationEnabled": false,
-        "isNativeCompilerSettingsCacheEnabled": false,
-        "rootBuildGradleFolder": "/Users/lucaskoh/Documents/GitHub/VidereX",
-        "sdkFolder": "/Users/lucaskoh/Library/Android/sdk",
-        "isPrefabEnabled": false
-      },
-      "splitsAbiFilterSet": [],
+      "originalCmakeToolchainFile": "/Users/lucaskoh/Library/Android/sdk/ndk/21.4.7075529/build/cmake/android.toolchain.cmake",
+      "cmakeToolchainFile": "/Users/lucaskoh/Library/Android/sdk/ndk/21.4.7075529/build/cmake/android.toolchain.cmake",
       "stlSharedObjectMap": {
         "LIBCXX_SHARED": {
-          "ARMEABI_V7A": "/Users/lucaskoh/Library/Android/sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/arm-linux-androideabi/libc++_shared.so",
-          "ARM64_V8A": "/Users/lucaskoh/Library/Android/sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so",
-          "X86": "/Users/lucaskoh/Library/Android/sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/i686-linux-android/libc++_shared.so",
-          "X86_64": "/Users/lucaskoh/Library/Android/sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/x86_64-linux-android/libc++_shared.so"
+          "ARMEABI_V7A": "/Users/lucaskoh/Library/Android/sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/arm-linux-androideabi/libc++_shared.so",
+          "ARM64_V8A": "/Users/lucaskoh/Library/Android/sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so",
+          "X86": "/Users/lucaskoh/Library/Android/sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/i686-linux-android/libc++_shared.so",
+          "X86_64": "/Users/lucaskoh/Library/Android/sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/x86_64-linux-android/libc++_shared.so"
         },
         "LIBCXX_STATIC": {},
         "NONE": {},
         "SYSTEM": {}
-      }
+      },
+      "project": {
+        "rootBuildGradleFolder": "/Users/lucaskoh/Documents/GitHub/VidereX",
+        "cxxFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/.cxx",
+        "compilerSettingsCacheFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/.cxx",
+        "sdkFolder": "/Users/lucaskoh/Library/Android/sdk",
+        "isNativeCompilerSettingsCacheEnabled": false,
+        "isBuildOnlyTargetAbiEnabled": true,
+        "ideBuildTargetAbi": "x86",
+        "isCmakeBuildCohabitationEnabled": false,
+        "isPrefabEnabled": false,
+        "isV2NativeModelEnabled": true
+      },
+      "nativeBuildOutputLevel": "QUIET"
     },
-    "objFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/build/intermediates/ndkBuild/debug/obj/local",
-    "variantName": "debug",
-    "validAbiList": [
-      "ARMEABI_V7A",
-      "ARM64_V8A",
-      "X86",
-      "X86_64"
-    ],
-    "prefabDirectory": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/prefab",
-    "prefabPackageDirectoryList": []
+    "prefabDirectory": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/prefab"
+  },
+  "buildSettings": {
+    "environmentVariables": []
   },
   "prefabFolder": "/Users/lucaskoh/Documents/GitHub/VidereX/app/.cxx/ndkBuild/debug/prefab/x86"
 }

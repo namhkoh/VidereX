@@ -1,4 +1,4 @@
-Executable : /Users/lucaskoh/Library/Android/sdk/ndk/21.0.6113669/ndk-build
+                    Executable : /Users/lucaskoh/Library/Android/sdk/ndk/21.4.7075529/ndk-build
 arguments : 
 NDK_PROJECT_PATH=null
 APP_BUILD_SCRIPT=/Users/lucaskoh/Documents/Github/VidereX/OpenCV-android-sdk/sdk/native/jni/OpenCV-arm64-v8a.mk
@@ -14,4 +14,6 @@ LOCAL_SHORT_COMMANDS=false
 -n
 jvmArgs : 
 
-Build command args:
+
+                    Build command args: []
+                    Version: 1

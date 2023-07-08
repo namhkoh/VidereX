@@ -2,9 +2,15 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VidereX.iml" filepath="$PROJECT_DIR$/.idea/modules/VidereX.iml" group="VidereX" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="VidereX/app" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/openCVLibrary3413/openCVLibrary3413.iml" filepath="$PROJECT_DIR$/.idea/modules/openCVLibrary3413/openCVLibrary3413.iml" group="VidereX/openCVLibrary3413" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VidereX.iml" filepath="$PROJECT_DIR$/.idea/modules/VidereX.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/VidereX.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/VidereX.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/VidereX.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/VidereX.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/VidereX.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/VidereX.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/VidereX.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/VidereX.app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/openCVLibrary3413/VidereX.openCVLibrary3413.iml" filepath="$PROJECT_DIR$/.idea/modules/openCVLibrary3413/VidereX.openCVLibrary3413.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/openCVLibrary3413/VidereX.openCVLibrary3413.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/openCVLibrary3413/VidereX.openCVLibrary3413.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/openCVLibrary3413/VidereX.openCVLibrary3413.main.iml" filepath="$PROJECT_DIR$/.idea/modules/openCVLibrary3413/VidereX.openCVLibrary3413.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/openCVLibrary3413/VidereX.openCVLibrary3413.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/openCVLibrary3413/VidereX.openCVLibrary3413.unitTest.iml" />
     </modules>
   </component>
 </project>
