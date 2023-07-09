@@ -363,7 +363,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
         }
         Map<String, Object> dataToSave = new HashMap<String, Object>();
         dataToSave.put("route", json);
-
+        Log.d("data_stored",json);
         mCollRef.add(dataToSave);
 
         Intent intent = new Intent(this, RouteListViewActivity.class);
