@@ -314,12 +314,13 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
      */
     private void storeViews() throws JSONException {
         route.setName(routeNameInput.getText().toString());
-
+        Log.d("true_debug",routeNameInput.getText().toString());
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Uri.class, new UriSerializer())
                 .create();
         json = gson.toJson(route);
         System.out.println(json);
+        Log.d("true_debug",json);
 
         JSONObject obj = new JSONObject(json);
         // Get route name
@@ -341,6 +342,7 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
             Uri imageUri = Uri.parse(snapObj.getString("preprocessed_img_uri"));
 //            frameListPath.add(imageUri);
             System.out.println(imageUri);
+            Log.d("true_debug",imageUri.toString());
             //route.addNewSnapshot(getApplicationContext(), imageUri, azimuth, pitch, roll);
             route.addNewSnapshot(imageUri);
 
@@ -367,6 +369,8 @@ public class VideoRecordRoute extends AppCompatActivity implements SensorEventLi
         Intent intent = new Intent(this, RouteListViewActivity.class);
         intent.putExtra("route_json", json);
         intent.putExtra("uriList", frameListPath);
+        Log.d("true_debug",json);
+        Log.d("true_debug",frameListPath.get(0).toString());
         startActivity(intent);
     }
 

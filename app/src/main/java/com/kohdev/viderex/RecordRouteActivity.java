@@ -107,13 +107,17 @@ public class RecordRouteActivity extends AppCompatActivity implements SensorEven
      * This function will store the taken view into views.
      */
     private void storeViews() throws JSONException {
+        Log.d("onButtonPress!CHEESE","CHEEEESE");
         route.setName(routeNameInput.getText().toString());
+        Log.d("storage_debug",routeNameInput.getText().toString());
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Uri.class, new UriSerializer())
                 .create();
         String json = gson.toJson(route);
         System.out.println(json);
+        Log.d("storage_debug",json);
+
 
         JSONObject obj = new JSONObject(json);
         // Get route name
@@ -140,6 +144,9 @@ public class RecordRouteActivity extends AppCompatActivity implements SensorEven
         Intent intent = new Intent(this, MenuActivity.class);
         intent.putExtra("route_json", json);
         intent.putExtra("uriList", uriList);
+        Log.d("storage_debug",json);
+        Log.d("storage_debug",uriList.get(0).toString());
+
         startActivity(intent);
     }
 

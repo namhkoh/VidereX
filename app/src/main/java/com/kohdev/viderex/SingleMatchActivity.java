@@ -8,6 +8,9 @@ import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
 import android.media.ToneGenerator;
 import android.os.Build;
 import android.os.Vibrator;
@@ -221,6 +224,14 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         mChart.setDrawBorders(false);
 
         feedMultiple();
+        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        try {
+            String wideAngleCameraId = getWideAngleCameraId(cameraManager);
+            Log.d("cheesecake",wideAngleCameraId);
+        } catch (CameraAccessException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 
@@ -377,6 +388,7 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         }
     }
 
+
     @Override
     protected void onDestroy() {
         // Destroying the camera.
@@ -407,6 +419,18 @@ public class SingleMatchActivity extends AppCompatActivity implements CameraBrid
         double rmse = Math.sqrt(mse);
         Log.e("error ", String.valueOf(rmse));
         return rmse;
+    }
+
+    private String getWideAngleCameraId(CameraManager cameraManager) throws CameraAccessException {
+        String[] cameraIdList = cameraManager.getCameraIdList();
+        for (String cameraId : cameraIdList) {
+            CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
+            Float maxFocusDistance = cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE);
+            if (maxFocusDistance != null && maxFocusDistance <= 0.5) { // This is a rough estimate, you may need to adjust this value
+                return cameraId;
+            }
+        }
+        return null;
     }
 
     /**

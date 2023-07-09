@@ -192,6 +192,14 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
+        Button debugBtn = findViewById(R.id.debugButton);
+        debugBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                debugMode();
+            }
+        });
+
         speechButton = findViewById(R.id.speechButton);
         utterance = findViewById(R.id.utterance);
 
@@ -406,6 +414,10 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
         dispatchTakePictureIntent();
     }
 
+    private void debugMode(){
+        // Test the wide camera angle access?
+    }
+
     /**
      * Method to route the user to select route
      */
@@ -483,7 +495,7 @@ public class MenuActivity extends AppCompatActivity implements SensorEventListen
      */
     private File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 

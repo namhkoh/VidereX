@@ -5,6 +5,7 @@
     <string name="SelectRouteButton">Record Route</string>
     <string name="FollowRouteButton">Follow Route</string>
     <string name="singleMatch">Single Match</string>
+    <string name="debugScreen">Debug</string>
     // SingleMatchActivity
     <string name="goalImageView">Goal image</string>
     <string name="differenceImageView">Difference image</string>

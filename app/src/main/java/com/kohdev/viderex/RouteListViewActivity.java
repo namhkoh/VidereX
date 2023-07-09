@@ -55,6 +55,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import io.grpc.internal.JsonUtil;
 
@@ -92,6 +93,7 @@ public class RouteListViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_list_view);
+        Log.d("inner_layer","entering route list");
         loadCollection();
 
         speechButton = findViewById(R.id.speechButton);
@@ -102,6 +104,8 @@ public class RouteListViewActivity extends AppCompatActivity {
             //routeNameList.add(json);
             System.out.println(framePathList);
             System.out.println(json);
+            Log.d("inner_layer",framePathList.get(0).toString());
+            Log.d("inner_layer",json);
             JSONObject obj = null;
             try {
                 obj = new JSONObject(json);
@@ -156,16 +160,17 @@ public class RouteListViewActivity extends AppCompatActivity {
 
             @Override
             public void onResults(Bundle bundle) {
-                Log.e(TAG, "on Results");
+                Log.d(TAG, "on Results");
                 ArrayList<String> matches = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                 userInput = matches.get(0);
                 //utterance.setText("Detected utterance: " + userInput);
-                Log.e("ALL MATCHES", userInput);
+                Log.d("inner_layer_userInput", userInput);
 
                 mCollRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                         Map<String, Object> myData = documentSnapshot.getData();
                         privateId = documentSnapshot.getId();
+                        Log.d("inner_layer_privateId",privateId);
                         try {
                             routeObj = new JSONObject((String) myData.get("route"));
                             routeName = routeObj.getString("name");
@@ -299,6 +304,7 @@ public class RouteListViewActivity extends AppCompatActivity {
     }
 
     private void loadCollection() {
+        Log.d("inner_layer","loadCollection called.");
         mCollRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -306,7 +312,7 @@ public class RouteListViewActivity extends AppCompatActivity {
                     Map<String, Object> myData = documentSnapshot.getData();
                     privateId = documentSnapshot.getId();
                     try {
-                        routeObj = new JSONObject((String) myData.get("route"));
+                        routeObj = new JSONObject((String) Objects.requireNonNull(myData.get("route")));
                         routeName = routeObj.getString("name");
                         routeNameList.add(routeName);
                         finalMap.put(routeName, routeObj);
@@ -319,6 +325,7 @@ public class RouteListViewActivity extends AppCompatActivity {
                     @NonNull
                     @Override
                     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                        Log.d("inner_layer","adapter_called");
                         TextView item = (TextView) super.getView(position, convertView, parent);
                         //item.setTextColor(Color.parseColor("#000000"));
                         item.setTextColor(Color.WHITE);
@@ -335,6 +342,7 @@ public class RouteListViewActivity extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         final String item = (String) adapter.getItem(position);
                         System.out.println(item);
+                        Log.d("inner_layer_item",item);
                         for (int i = 0; i < routeOptions.getChildCount(); i++) {
                             if (position == i) {
                                 routeOptions.getChildAt(i).setBackgroundColor(Color.parseColor("#8c8c8c"));

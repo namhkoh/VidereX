@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/JavaCameraView"
-        opencv:camera_id="2"
+        opencv:camera_id="0"
         opencv:layout_constraintTop_toTopOf="parent"
         opencv:show_fps="true"
         tools:layout_editor_absoluteX="0dp" />
